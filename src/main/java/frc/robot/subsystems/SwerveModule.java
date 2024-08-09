@@ -91,7 +91,7 @@ public class SwerveModule extends SubsystemBase {
     return Rotation2d.fromDegrees(turnEncoder.getPosition());
   }
 
-  public void setMotors(SwerveModuleState state) {
+  public void setState(SwerveModuleState state) {
     turnPIDController.setReference(state.angle.getDegrees(), ControlType.kPosition);
     drivePIDController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
   }
