@@ -75,6 +75,8 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.setInverted(false);
     drivePIDController.setFeedbackDevice(driveEncoder);
 
+    driveMotor.setSmartCurrentLimit(35);
+
     driveEncoder.setPositionConversionFactor(DrivebaseModuleConstants.kDriveEncoderPositionFactor);
     driveEncoder.setVelocityConversionFactor(DrivebaseModuleConstants.kDriveEncoderVelocityFactor);
 
