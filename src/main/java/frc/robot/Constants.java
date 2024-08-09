@@ -39,4 +39,10 @@ public final class Constants {
     // FeedForward Constants
 
   }
+
+  public static class DrivebaseConstants {
+    // Physical constants
+    public static final double kWheelBase = Units.inchesToMeters(20);/* the distance between the front and rear wheels */
+    public static final double kTrackWidth = Units.inchesToMeters(22); /* the distance between left and right wheels */
+  }
 }
