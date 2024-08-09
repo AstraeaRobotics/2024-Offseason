@@ -82,6 +82,10 @@ public class SwerveModule extends SubsystemBase {
 
     driveEncoder.setPosition(0);
 
+    drivePIDController.setP(DrivebaseModuleConstants.driveKP);
+    drivePIDController.setI(DrivebaseModuleConstants.driveKI);
+    drivePIDController.setD(DrivebaseModuleConstants.driveKD);
+
     driveMotor.burnFlash();
   }
 
