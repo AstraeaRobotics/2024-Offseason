@@ -64,10 +64,10 @@ public class SwerveModule extends SubsystemBase {
     turnPIDController.setP(DrivebaseModuleConstants.turnKP);
     turnPIDController.setI(DrivebaseModuleConstants.turnKI);
     turnPIDController.setD(DrivebaseModuleConstants.turnKD);
+    turnPIDController.setFF(DrivebaseModuleConstants.turnKV); // most likely won't work without kS incorporated
 
     turnMotor.burnFlash();
 
-    // Todo: need to set ff
     // Todo: need to set turn encoder position
   }
 
@@ -85,6 +85,7 @@ public class SwerveModule extends SubsystemBase {
     drivePIDController.setP(DrivebaseModuleConstants.driveKP);
     drivePIDController.setI(DrivebaseModuleConstants.driveKI);
     drivePIDController.setD(DrivebaseModuleConstants.driveKD);
+    drivePIDController.setFF(DrivebaseModuleConstants.driveKV);
 
     driveMotor.burnFlash();
   }
