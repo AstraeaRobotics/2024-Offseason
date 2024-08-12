@@ -6,6 +6,7 @@ package frc.robot.commands.swerve;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -36,7 +37,8 @@ public class TeleopSwerve extends Command {
   @Override
   public void execute() {
 
-    if(Math.abs(m_driveX.getAsDouble()) > 0.1 && Math.abs(m_driveY.getAsDouble()) > 0.1) {
+
+    if(Math.abs(m_driveX.getAsDouble()) > 0.1 || Math.abs(m_driveY.getAsDouble()) > 0.1) {
       m_SwerveSubsystem.drive(m_driveX.getAsDouble(), m_driveY.getAsDouble(), m_rotation.getAsDouble());
     }
     else{

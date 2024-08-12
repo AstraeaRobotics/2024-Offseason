@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import frc.robot.Constants.DrivebaseModuleConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveModule extends SubsystemBase {
@@ -29,8 +30,10 @@ public class SwerveModule extends SubsystemBase {
 
   private int angularOffset;
 
+  private String moduleName;
 
-  public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset) {
+
+  public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName) {
     turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
     driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
 
@@ -42,12 +45,15 @@ public class SwerveModule extends SubsystemBase {
 
     this.angularOffset = angularOffset;
 
+    this.moduleName = moduleName;
+
     configureTurnMotor();
     configureDriveMotor();
   }
 
   private void configureTurnMotor() {
     turnMotor.setInverted(false);
+    turnEncoder.setInverted(true);
     turnPIDController.setFeedbackDevice(turnEncoder);
 
     turnMotor.setSmartCurrentLimit(35);
@@ -72,7 +78,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   private void configureDriveMotor() {
-    driveMotor.setInverted(false);
+    driveMotor.setInverted(true);
     drivePIDController.setFeedbackDevice(driveEncoder);
 
     driveMotor.setSmartCurrentLimit(35);
@@ -99,8 +105,15 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setState(SwerveModuleState state) {
-    turnPIDController.setReference(state.angle.getDegrees(), ControlType.kPosition);
-    drivePIDController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
+    double goalAngle = state.angle.getDegrees() + 180;
+    double oldDriveSpeed = state.speedMetersPerSecond;
+    double newDriveSpeed = goalAngle > 90 && goalAngle < 270 ? -oldDriveSpeed : oldDriveSpeed;
+
+    // turnPIDController.setReference(state.angle.getDegrees() + 180, ControlType.kPosition);
+    SmartDashboard.putNumber("current angle", turnEncoder.getPosition());
+    SmartDashboard.putNumber("desired position", state.angle.getDegrees() + 180);
+    SmartDashboard.putNumber("error", goalAngle - turnEncoder.getPosition());
+    // drivePIDController.setReference(newDriveSpeed, ControlType.kVelocity);
   }
 
   @Override

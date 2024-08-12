@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
 
@@ -47,10 +48,10 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveModules = new SwerveModule[4];
 
 
-    swerveModules[0] = new SwerveModule(2, 1, 270); // Front left
-    swerveModules[1] = new SwerveModule(4, 3, 0); // Front right
-    swerveModules[2] = new SwerveModule(6, 5, 180); // Back left
-    swerveModules[3] = new SwerveModule(8, 7, 90); // Back right
+    swerveModules[0] = new SwerveModule(2, 1, 270, "front left"); // Front left
+    swerveModules[1] = new SwerveModule(4, 3, 0, "front right"); // Front right
+    swerveModules[2] = new SwerveModule(6, 5, 180, "back left"); // Back left
+    swerveModules[3] = new SwerveModule(8, 7, 90, "back right"); // Back right
 
 
     gyro.reset();
@@ -59,11 +60,13 @@ public class SwerveSubsystem extends SubsystemBase {
   public void drive(double driveX, double driveY, double rotation) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(driveX, driveY, rotation, Rotation2d.fromDegrees(getHeading()));
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
+    // SmartDashboard.putNumber("driveX", driveX);
+    // SmartDashboard.putNumber("drive y", driveY);
 
-    swerveModules[0].setState(swerveModuleStates[0]);
-    swerveModules[1].setState(swerveModuleStates[1]);
-    swerveModules[2].setState(swerveModuleStates[2]);
-    swerveModules[3].setState(swerveModuleStates[3]);
+    swerveModules[0].setState(swerveModuleStates[0]); // Front left
+    swerveModules[1].setState(swerveModuleStates[1]); // Front right
+    swerveModules[2].setState(swerveModuleStates[2]); // Back left
+    swerveModules[3].setState(swerveModuleStates[3]); // Back right
   }
 
   public double getHeading() {
