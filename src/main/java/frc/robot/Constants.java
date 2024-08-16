@@ -41,7 +41,7 @@ public final class Constants {
     public static final double driveKD = 0;
 
     // FeedForward Constants
-    public static final double turnKV = 0.02; // 0.31
+    public static final double turnKV = 0.005; // 0.31
     public static final double driveKV = 0.2; // 0.45
 
   }

@@ -32,8 +32,10 @@ public class SwerveModule extends SubsystemBase {
 
   private String moduleName;
 
+  private boolean setToInverted;
 
-  public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName) {
+
+  public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName, boolean setInverted) {
     turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
     driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
 
@@ -44,8 +46,8 @@ public class SwerveModule extends SubsystemBase {
     driveEncoder = driveMotor.getEncoder();
 
     this.angularOffset = angularOffset;
-
     this.moduleName = moduleName;
+    this.setToInverted = setInverted;
 
     configureTurnMotor();
     configureDriveMotor();
@@ -53,11 +55,10 @@ public class SwerveModule extends SubsystemBase {
 
   private void configureTurnMotor() {
     turnMotor.setInverted(false);
-    turnEncoder.setInverted(true);
     turnPIDController.setFeedbackDevice(turnEncoder);
 
     turnMotor.setSmartCurrentLimit(35);
-    turnMotor.setIdleMode(IdleMode.kBrake);
+    turnMotor.setIdleMode(IdleMode.kCoast);
 
     turnEncoder.setPositionConversionFactor(DrivebaseModuleConstants.kTurnEncoderPositionFactor);
     turnEncoder.setVelocityConversionFactor(DrivebaseModuleConstants.kTurnEncoderVelocityFactor);
@@ -106,12 +107,9 @@ public class SwerveModule extends SubsystemBase {
 
   public void setState(SwerveModuleState state) {
     double goalAngle = state.angle.getDegrees() + 180;
-    double oldDriveSpeed = state.speedMetersPerSecond;
-    double newDriveSpeed = goalAngle > 90 && goalAngle < 270 ? -oldDriveSpeed : oldDriveSpeed;
-
     // turnPIDController.setReference(state.angle.getDegrees() + 180, ControlType.kPosition);
+    SmartDashboard.putNumber("desired angle", goalAngle);
     SmartDashboard.putNumber("current angle", turnEncoder.getPosition());
-    SmartDashboard.putNumber("desired position", state.angle.getDegrees() + 180);
     SmartDashboard.putNumber("error", goalAngle - turnEncoder.getPosition());
     // drivePIDController.setReference(newDriveSpeed, ControlType.kVelocity);
   }
