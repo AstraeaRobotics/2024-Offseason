@@ -51,7 +51,7 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveModules[0] = new SwerveModule(2, 1, 270, "front left", false); // Front left
     swerveModules[1] = new SwerveModule(4, 3, 0, "front right", false); // Front right
     swerveModules[2] = new SwerveModule(6, 5, 180, "back left", false); // Back left
-    swerveModules[3] = new SwerveModule(8, 7, 90, "back right", true); // Back right
+    swerveModules[3] = new SwerveModule(8, 7, 90, "back right", false); // Back right
 
 
     gyro.reset();
@@ -65,7 +65,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     swerveModules[0].setState(swerveModuleStates[0]); // Front left
     swerveModules[1].setState(swerveModuleStates[1]); // Front right
-    swerveModules[2].setState(swerveModuleStates[2]); // Back left
+    // swerveModules[2].setState(swerveModuleStates[2]); // Back left
     swerveModules[3].setState(swerveModuleStates[3]); // Back right
   }
 

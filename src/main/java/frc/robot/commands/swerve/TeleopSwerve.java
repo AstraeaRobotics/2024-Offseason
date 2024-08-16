@@ -36,15 +36,12 @@ public class TeleopSwerve extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-
     if(Math.abs(m_driveX.getAsDouble()) > 0.1 || Math.abs(m_driveY.getAsDouble()) > 0.1) {
       m_SwerveSubsystem.drive(m_driveX.getAsDouble(), m_driveY.getAsDouble(), m_rotation.getAsDouble());
     }
     else{
       m_SwerveSubsystem.drive(0, 0, 0);
     }
-
   }
 
   // Called once the command ends or is interrupted.

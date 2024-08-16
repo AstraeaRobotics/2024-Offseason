@@ -11,7 +11,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.DrivebaseModuleConstants;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,7 +25,8 @@ public class SwerveModule extends SubsystemBase {
   private CANSparkMax turnMotor;
   private CANSparkMax driveMotor;
 
-  private SparkPIDController turnPIDController;
+  // private SparkPIDController turnPIDController;
+  PIDController turnPIDController;
   private SparkPIDController drivePIDController;
 
   private AbsoluteEncoder turnEncoder;
@@ -39,7 +43,7 @@ public class SwerveModule extends SubsystemBase {
     turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
     driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
 
-    turnPIDController = turnMotor.getPIDController();
+    turnPIDController = new PIDController(DrivebaseModuleConstants.turnKP, 0, 0);
     drivePIDController = driveMotor.getPIDController();
 
     turnEncoder = turnMotor.getAbsoluteEncoder();
@@ -55,7 +59,7 @@ public class SwerveModule extends SubsystemBase {
 
   private void configureTurnMotor() {
     turnMotor.setInverted(false);
-    turnPIDController.setFeedbackDevice(turnEncoder);
+    // turnPIDController.setFeedbackDevice(turnEncoder);
 
     turnMotor.setSmartCurrentLimit(35);
     turnMotor.setIdleMode(IdleMode.kCoast);
@@ -64,14 +68,14 @@ public class SwerveModule extends SubsystemBase {
     turnEncoder.setVelocityConversionFactor(DrivebaseModuleConstants.kTurnEncoderVelocityFactor);
 
     // Turns in opposite direction if abs value of error is > 90 degrees
-    turnPIDController.setPositionPIDWrappingEnabled(true);
-    turnPIDController.setPositionPIDWrappingMinInput(0);
-    turnPIDController.setPositionPIDWrappingMaxInput(90);
+    // turnPIDController.setPositionPIDWrappingEnabled(true);
+    // turnPIDController.setPositionPIDWrappingMinInput(0);
+    // turnPIDController.setPositionPIDWrappingMaxInput(90);
 
-    turnPIDController.setP(DrivebaseModuleConstants.turnKP);
-    turnPIDController.setI(DrivebaseModuleConstants.turnKI);
-    turnPIDController.setD(DrivebaseModuleConstants.turnKD);
-    turnPIDController.setFF(DrivebaseModuleConstants.turnKV); // most likely won't work without kS incorporated
+    // turnPIDController.setP(DrivebaseModuleConstants.turnKP);
+    // turnPIDController.setI(DrivebaseModuleConstants.turnKI);
+    // turnPIDController.setD(DrivebaseModuleConstants.turnKD);
+    // turnPIDController.setFF(DrivebaseModuleConstants.turnKV); // most likely won't work without kS incorporated
 
     turnMotor.burnFlash();
 
@@ -106,12 +110,14 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setState(SwerveModuleState state) {
-    double goalAngle = state.angle.getDegrees() + 180;
-    // turnPIDController.setReference(state.angle.getDegrees() + 180, ControlType.kPosition);
-    SmartDashboard.putNumber("desired angle", goalAngle);
-    SmartDashboard.putNumber("current angle", turnEncoder.getPosition());
-    SmartDashboard.putNumber("error", goalAngle - turnEncoder.getPosition());
-    // drivePIDController.setReference(newDriveSpeed, ControlType.kVelocity);
+    double goalAngle = state.angle.getDegrees();
+    double currentAngle = turnEncoder.getPosition() - 180;
+    double PIDOutput = turnPIDController.calculate(goalAngle, turnEncoder.getPosition());
+
+    SmartDashboard.putNumber("goal angle", goalAngle);
+    SmartDashboard.putNumber("current angle", currentAngle);
+    SmartDashboard.putNumber("pid output", PIDOutput);
+
   }
 
   @Override
