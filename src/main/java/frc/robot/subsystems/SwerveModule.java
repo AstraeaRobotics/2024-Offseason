@@ -36,10 +36,7 @@ public class SwerveModule extends SubsystemBase {
 
   private String moduleName;
 
-  private boolean setToInverted;
-
-
-  public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName, boolean setInverted) {
+  public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName) {
     turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
     driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
 
@@ -51,7 +48,6 @@ public class SwerveModule extends SubsystemBase {
 
     this.angularOffset = angularOffset;
     this.moduleName = moduleName;
-    this.setToInverted = setInverted;
 
     configureTurnMotor();
     configureDriveMotor();
