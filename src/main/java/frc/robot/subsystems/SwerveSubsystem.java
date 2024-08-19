@@ -65,7 +65,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     swerveModules[0].setState(swerveModuleStates[0]); // Front left
     swerveModules[1].setState(swerveModuleStates[1]); // Front right
-    // swerveModules[2].setState(swerveModuleStates[2]); // Back left
+    swerveModules[2].setState(swerveModuleStates[2]); // Back left
     swerveModules[3].setState(swerveModuleStates[3]); // Back right
   }
 
