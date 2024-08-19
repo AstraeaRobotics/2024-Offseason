@@ -34,7 +34,6 @@ public class SwerveModule extends SubsystemBase {
   private RelativeEncoder driveEncoder;
 
   private int angularOffset;
-
   private String moduleName;
 
   public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName) {
@@ -64,16 +63,6 @@ public class SwerveModule extends SubsystemBase {
     turnEncoder.setPositionConversionFactor(DrivebaseModuleConstants.kTurnEncoderPositionFactor);
     turnEncoder.setVelocityConversionFactor(DrivebaseModuleConstants.kTurnEncoderVelocityFactor);
 
-    // Turns in opposite direction if abs value of error is > 90 degrees
-    // turnPIDController.setPositionPIDWrappingEnabled(true);
-    // turnPIDController.setPositionPIDWrappingMinInput(0);
-    // turnPIDController.setPositionPIDWrappingMaxInput(90);
-
-    // turnPIDController.setP(DrivebaseModuleConstants.turnKP);
-    // turnPIDController.setI(DrivebaseModuleConstants.turnKI);
-    // turnPIDController.setD(DrivebaseModuleConstants.turnKD);
-    // turnPIDController.setFF(DrivebaseModuleConstants.turnKV); // most likely won't work without kS incorporated
-
     turnMotor.burnFlash();
 
     // Todo: need to set turn encoder position
@@ -102,27 +91,22 @@ public class SwerveModule extends SubsystemBase {
     return driveEncoder.getPosition();
   }
 
-  public Rotation2d getAngle() {
-    return Rotation2d.fromDegrees(turnEncoder.getPosition());
+  public double getAngle() {
+    return (turnEncoder.getPosition() + angularOffset) % 360;
   }
 
   public void setState(SwerveModuleState state) {
-    double tempGoalAngle = state.angle.getDegrees() + 180;
-    double currentAngle = (turnEncoder.getPosition() + angularOffset) % 360;
-    double goalAngle = SwerveUtil.remapAngle(currentAngle, tempGoalAngle);
+    double goalAngle = SwerveUtil.remapAngle(getAngle(), state.angle.getDegrees() + 180);
 
-    double PIDOutput = turnPIDController.calculate(goalAngle, currentAngle);
-
-    double motorSpeed = state.speedMetersPerSecond;
+    double PIDOutput = turnPIDController.calculate(goalAngle, getAngle());
+    double speed = SwerveUtil.remapSpeed(goalAngle, state.speedMetersPerSecond);
 
     turnMotor.set(PIDOutput);
-    drivePIDController.setReference(motorSpeed, ControlType.kVelocity);
+    drivePIDController.setReference(speed, ControlType.kVelocity);
 
+    SmartDashboard.putString("module name", moduleName);
     SmartDashboard.putNumber("goal angle", goalAngle);
-    SmartDashboard.putNumber("unmodified goal angle", tempGoalAngle);
-    SmartDashboard.putNumber("current angle", currentAngle);
     SmartDashboard.putNumber("pid output", PIDOutput);
-
   }
 
   @Override

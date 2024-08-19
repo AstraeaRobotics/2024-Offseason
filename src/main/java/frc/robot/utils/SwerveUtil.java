@@ -2,17 +2,11 @@ package frc.robot.utils;
 
 public class SwerveUtil {
     public static double remapAngle(double currentAngle, double desiredAngle) {
-        if(Math.abs(desiredAngle - currentAngle) > 90){
-            double alternateDesiredangle =  (desiredAngle + 180) % 360;
-            if(Math.abs(desiredAngle - currentAngle) < Math.abs(alternateDesiredangle - currentAngle)){
-                return desiredAngle;
-            }
-            else{
-                return alternateDesiredangle;
-            }
-        }
-        else {
-            return desiredAngle;
-        }
+        double angleDifference = Math.abs(currentAngle - desiredAngle);
+        return angleDifference > 90 ? ((angleDifference + 180) % 360) : angleDifference;
+    }
+
+    public static double remapSpeed(double desiredAngle, double speed) {
+        return desiredAngle > 180 && desiredAngle < 360 ? -speed : speed;
     }
 }
