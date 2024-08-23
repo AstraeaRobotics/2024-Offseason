@@ -99,14 +99,16 @@ public class SwerveModule extends SubsystemBase {
     double goalAngle = SwerveUtil.remapAngle(getAngle(), state.angle.getDegrees() + 180);
 
     double PIDOutput = turnPIDController.calculate(goalAngle, getAngle());
-    double speed = SwerveUtil.remapSpeed(goalAngle, state.speedMetersPerSecond);
+    double speed = SwerveUtil.remapSpeed(state.angle.getDegrees() + 180, state.speedMetersPerSecond);
 
     turnMotor.set(PIDOutput);
-    drivePIDController.setReference(speed, ControlType.kVelocity);
+    // drivePIDController.setReference(speed, ControlType.kVelocity);
 
     SmartDashboard.putString("module name", moduleName);
     SmartDashboard.putNumber("goal angle", goalAngle);
     SmartDashboard.putNumber("pid output", PIDOutput);
+    SmartDashboard.putNumber("current angle", getAngle());
+    SmartDashboard.putNumber("speed", speed);
   }
 
   @Override
