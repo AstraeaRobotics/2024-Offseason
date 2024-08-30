@@ -96,25 +96,21 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setState(SwerveModuleState state) {
-    double rawAngle = state.angle.getDegrees() * -1;
-    double controllerAngle = getAngle() - 180;
+    double desiredAngle = state.angle.getDegrees();
+    double currentAngle = getAngle() - 180;
     // double goalAngle = SwerveUtil.remapAngle(controllerAngle, rawAngle);
-    double error = SwerveUtil.remapAngle(controllerAngle, rawAngle);
+    double error = SwerveUtil.remapAngle(currentAngle, desiredAngle);
     double PIDOutput = error * DrivebaseModuleConstants.turnKP;
 
     // double PIDOutput = turnPIDController.calculate(goalAngle, controllerAngle);
-    double speed = SwerveUtil.remapSpeed(rawAngle, state.speedMetersPerSecond);
+    // double speed = SwerveUtil.remapSpeed(desiredAngle, state.speedMetersPerSecond);
 
     // turnMotor.set(PIDOutput);
-    turnMotor.set(PIDOutput * DrivebaseModuleConstants.turnKP);
-    drivePIDController.setReference(speed, ControlType.kVelocity);
+    // drivePIDController.setReference(speed, ControlType.kVelocity);
 
-    SmartDashboard.putString("module name", moduleName);
-    SmartDashboard.putNumber("raw controller angle", rawAngle);
-    SmartDashboard.putNumber("goal angle", error);
-    SmartDashboard.putNumber("pid output", PIDOutput);
-    SmartDashboard.putNumber("current angle", controllerAngle);
-    SmartDashboard.putNumber("speed", speed);
+    SmartDashboard.putNumber("raw desired angle", desiredAngle);
+    SmartDashboard.putNumber("current angle", currentAngle);
+    // SmartDashboard.putNumber("error", error);
   }
 
   @Override
