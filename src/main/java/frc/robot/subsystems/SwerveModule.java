@@ -103,7 +103,8 @@ public class SwerveModule extends SubsystemBase {
     double PIDOutput = turnPIDController.calculate(goalAngle, controllerAngle);
     double speed = SwerveUtil.remapSpeed(rawAngle, state.speedMetersPerSecond);
 
-    turnMotor.set(PIDOutput);
+    // turnMotor.set(PIDOutput);
+    turnMotor.set(PIDOutput * DrivebaseModuleConstants.turnKP);
     drivePIDController.setReference(speed, ControlType.kVelocity);
 
     SmartDashboard.putString("module name", moduleName);
