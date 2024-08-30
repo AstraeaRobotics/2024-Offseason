@@ -12,8 +12,7 @@ public class SwerveUtil {
         }
         angleDifference = currentAngle - desiredAngle;
 
-        double newAngle = Math.abs(angleDifference) > 90 ? ((desiredAngle + 180) % 360) : desiredAngle;
-        return newAngle;
+        return Math.abs(angleDifference) > 90 ? ((desiredAngle + 180) % 360) : desiredAngle;
     }
 
     public static double remapSpeed(double desiredAngle, double speed) {
