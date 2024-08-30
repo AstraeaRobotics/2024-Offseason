@@ -7,6 +7,6 @@ public class SwerveUtil {
     }
 
     public static double remapSpeed(double desiredAngle, double speed) {
-        return desiredAngle > 180 && desiredAngle < 360 ? -speed : speed;
+        return desiredAngle < 0 && desiredAngle > -180 ? -speed : speed;
     }
 }
