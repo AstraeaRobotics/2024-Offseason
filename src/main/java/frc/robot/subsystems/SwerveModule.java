@@ -96,6 +96,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setState(SwerveModuleState state) {
+<<<<<<< Updated upstream
     // double rawAngle = (state.angle.getDegrees() + 360) % 360;
     double goalAngle = state.angle.getDegrees() * -1;
     double currentAngle = getAngle() - 180;
@@ -114,6 +115,30 @@ public class SwerveModule extends SubsystemBase {
     SmartDashboard.putNumber("current angle", currentAngle);
     SmartDashboard.putNumber("speed", speed);
     SmartDashboard.putNumber("pid output", PIDOutput);
+=======
+    // double rawAngle = state.angle.getDegrees() * -1;
+    // double rawControllerAngle = getAngle() - 180;
+    // double goalAngle = SwerveUtil.remapAngle(rawControllerAngle, rawAngle);
+
+    // double PIDOutput = turnPIDController.calculate(goalAngle, rawControllerAngle);
+    // double speed = SwerveUtil.remapSpeed(rawControllerAngle, state.speedMetersPerSecond);
+
+    double currentAngle = getAngle() - 180;
+    double rawControllerAngle = state.angle.getDegrees() * -1;
+    double goalAngle = SwerveUtil.remapAngle(currentAngle, rawControllerAngle);
+
+    double PIDOutput = turnPIDController.calculate(currentAngle, goalAngle) * -1;
+
+    turnMotor.set(PIDOutput);
+    // drivePIDController.setReference(speed, ControlType.kVelocity);
+
+    SmartDashboard.putString("module name", moduleName);
+    SmartDashboard.putNumber("raw controller angle", currentAngle);
+    SmartDashboard.putNumber("goal angle", goalAngle);
+    SmartDashboard.putNumber("pid output", PIDOutput);
+    SmartDashboard.putNumber("current angle", rawControllerAngle);
+    // SmartDashboard.putNumber("speed", speed);
+>>>>>>> Stashed changes
   }
 
   @Override
