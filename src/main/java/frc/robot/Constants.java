@@ -32,7 +32,7 @@ public final class Constants {
     public static final double kDriveEncoderVelocityFactor = 1/(60 * kDriveGearRatio);
 
     // PID Constants (change later)
-    public static final double turnKP = 0.0015;
+    public static final double turnKP = 0.002;
     public static final double turnKI = 0;
     public static final double turnKD = 0;
 
@@ -42,7 +42,7 @@ public final class Constants {
 
     // FeedForward Constants
     public static final double turnKV = 0.00005; // 0.31
-    public static final double driveKV = 0.45; // 0.45
+    public static final double driveKV = 0.1; // 0.45
 
   }
 
