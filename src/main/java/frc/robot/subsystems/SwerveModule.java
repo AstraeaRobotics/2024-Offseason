@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.DrivebaseModuleConstants;
 import frc.robot.utils.SwerveUtil;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -99,21 +100,28 @@ public class SwerveModule extends SubsystemBase {
     // double rawAngle = (state.angle.getDegrees() + 360) % 360;
     double goalAngle = state.angle.getDegrees() * -1;
     double currentAngle = getAngle() - 180;
-    double speed = SwerveUtil.remapSpeed(currentAngle, goalAngle);
+    double speed = SwerveUtil.remapSpeed(currentAngle, goalAngle, state.speedMetersPerSecond);
 
     // Turn PID
     double error = SwerveUtil.remapAngle(currentAngle, goalAngle);
-    double PIDOutput = error * DrivebaseModuleConstants.turnKP;
+    double PIDOutput = error * DrivebaseModuleConstants.turnKP; 
+
+    
 
     // double PIDOutput = turnPIDController.calculate(goalAngle, controllerAngle);
 
     // turnMotor.set(PIDOutput);
+    // driveMotor.set(speed * 0.35);
     // drivePIDController.setReference(speed, ControlType.kVelocity);
 
     SmartDashboard.putNumber("goal angle", goalAngle);
     SmartDashboard.putNumber("current angle", currentAngle);
-    SmartDashboard.putNumber("speed", speed);
+    SmartDashboard.putNumber("speed", speed * 0.35);
     SmartDashboard.putNumber("pid output", PIDOutput);
+
+    
+
+    // speed numbers
   }
 
   @Override

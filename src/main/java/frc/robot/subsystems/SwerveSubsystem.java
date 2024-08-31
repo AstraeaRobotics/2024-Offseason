@@ -62,13 +62,18 @@ public class SwerveSubsystem extends SubsystemBase {
     // SmartDashboard.putNumber("drive y", driveY);
 
     // swerveModules[0].setState(swerveModuleStates[0]); // Front left
-    // swerveModules[1].setState(swerveModuleStates[1]); // Front right
+    swerveModules[1].setState(swerveModuleStates[1]); // Front right
     // swerveModules[2].setState(swerveModuleStates[2]); // Back left
-    swerveModules[3].setState(swerveModuleStates[3]); // Back right
+    // swerveModules[3].setState(swerveModuleStates[3]); // Back right
+
   }
 
   public double getHeading() {
-    return gyro.getAngle();
+    return (gyro.getAngle() + 90) % 360;
+  }
+
+  public void resetGyro() {
+    gyro.reset();
   }
 
 
@@ -76,5 +81,6 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("current heading", getHeading());
   }
 }
