@@ -37,7 +37,10 @@ public class SwerveModule extends SubsystemBase {
   private int angularOffset;
   private String moduleName;
 
-  public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName) {
+  private boolean isInverted;
+
+
+  public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName, boolean isInverted) {
     turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
     driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
 
@@ -49,6 +52,9 @@ public class SwerveModule extends SubsystemBase {
 
     this.angularOffset = angularOffset;
     this.moduleName = moduleName;
+
+    this.isInverted = isInverted;
+
 
     configureTurnMotor();
     configureDriveMotor();
@@ -70,7 +76,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   private void configureDriveMotor() {
-    driveMotor.setInverted(true);
+    driveMotor.setInverted(false);
     drivePIDController.setFeedbackDevice(driveEncoder);
 
     driveMotor.setSmartCurrentLimit(35);
@@ -96,23 +102,30 @@ public class SwerveModule extends SubsystemBase {
     return (turnEncoder.getPosition() + angularOffset) % 360;
   }
 
-  public void setState(SwerveModuleState state) {
+  public void setState(SwerveModuleState state, boolean isRotating) {
     // double rawAngle = (state.angle.getDegrees() + 360) % 360;
     double goalAngle = state.angle.getDegrees() * -1;
     double currentAngle = getAngle() - 180;
-    double speed = SwerveUtil.remapSpeed(currentAngle, goalAngle, state.speedMetersPerSecond);
+    double speed = 0;
+
 
     // Turn PID
     double error = SwerveUtil.remapAngle(currentAngle, goalAngle);
-    double PIDOutput = error * DrivebaseModuleConstants.turnKP; 
+    double PIDOutput = error * DrivebaseModuleConstants.turnKP;
 
+    if(!isRotating){
+      speed = SwerveUtil.remapSpeed(goalAngle - currentAngle, state.speedMetersPerSecond);
+    }
+    else{
+      speed = SwerveUtil.remapSpeed(error, state.speedMetersPerSecond);
+    }
     
 
     // double PIDOutput = turnPIDController.calculate(goalAngle, controllerAngle);
 
-    // turnMotor.set(PIDOutput);
-    // driveMotor.set(speed * 0.35);
-    // drivePIDController.setReference(speed, ControlType.kVelocity);
+    turnMotor.set(PIDOutput);
+    driveMotor.set(speed * 0.15);
+    drivePIDController.setReference(speed, ControlType.kVelocity);
 
     SmartDashboard.putNumber("goal angle", goalAngle);
     SmartDashboard.putNumber("current angle", currentAngle);

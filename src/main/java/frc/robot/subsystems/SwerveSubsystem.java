@@ -47,24 +47,24 @@ public class SwerveSubsystem extends SubsystemBase {
 
     swerveModules = new SwerveModule[4];
 
-    swerveModules[0] = new SwerveModule(2, 1, 180, "front left"); // Front left
-    swerveModules[1] = new SwerveModule(4, 3, 270, "front right"); // Front right
-    swerveModules[2] = new SwerveModule(6, 5, 90, "back left"); // Back left   
-    swerveModules[3] = new SwerveModule(8, 7, 0, "back right"); // Back right
+    swerveModules[0] = new SwerveModule(2, 1, 180, "front left", false); // Front left
+    swerveModules[1] = new SwerveModule(4, 3, 270, "front right", false); // Front right
+    swerveModules[2] = new SwerveModule(6, 5, 90, "back left", true); // Back left   
+    swerveModules[3] = new SwerveModule(8, 7, 0, "back right", true); // Back right
 
     gyro.reset();
   }
 
-  public void drive(double driveX, double driveY, double rotation) {
+  public void drive(double driveX, double driveY, double rotation, boolean isRotating) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
     // SmartDashboard.putNumber("driveX", driveX);
     // SmartDashboard.putNumber("drive y", driveY);
 
-    // swerveModules[0].setState(swerveModuleStates[0]); // Front left
-    swerveModules[1].setState(swerveModuleStates[1]); // Front right
-    // swerveModules[2].setState(swerveModuleStates[2]); // Back left
-    // swerveModules[3].setState(swerveModuleStates[3]); // Back right
+    swerveModules[0].setState(swerveModuleStates[0], isRotating); // Front left
+    swerveModules[1].setState(swerveModuleStates[1], isRotating); // Front right
+    swerveModules[2].setState(swerveModuleStates[2], isRotating); // Back left
+    swerveModules[3].setState(swerveModuleStates[3], isRotating); // Back right
 
   }
 
@@ -76,11 +76,16 @@ public class SwerveSubsystem extends SubsystemBase {
     gyro.reset();
   }
 
+  // ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(frontRightModuleState);
 
+  // double forward = chassisSpeeds.vxMetersPerSecond;
+  // double sideways = chassisSpeeds.vyMetersPerSecond;
+  // double angular = chassisSpeeds.omegaRadiansPerSecond;
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("current heading", getHeading());
+
   }
 }

@@ -17,9 +17,7 @@ public class SwerveUtil {
     // public static double remapSpeed(double desiredAngle, double speed) {
     //     return desiredAngle < 0 && desiredAngle > -180 ? -speed : speed;
     // }
-    public static double remapSpeed(double currentAngle, double desiredAngle, double speed) {
-        double displacement = desiredAngle - currentAngle;
-        
+    public static double remapSpeed(double displacement, double speed) {
         return Math.abs(displacement) > 90 && Math.abs(displacement) < 270 ? -speed : speed;
     }
 }
