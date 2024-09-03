@@ -113,24 +113,22 @@ public class SwerveModule extends SubsystemBase {
     double error = SwerveUtil.remapAngle(currentAngle, goalAngle);
     double PIDOutput = error * DrivebaseModuleConstants.turnKP;
 
-    if(!isRotating){
-      speed = SwerveUtil.remapSpeed(goalAngle - currentAngle, state.speedMetersPerSecond);
-    }
-    else{
-      speed = SwerveUtil.remapSpeed(error, state.speedMetersPerSecond);
-    }
-    
+    speed = SwerveUtil.remapSpeed(goalAngle - currentAngle, state.speedMetersPerSecond);
 
-    // double PIDOutput = turnPIDController.calculate(goalAngle, controllerAngle);
+    if(isInverted && isRotating) {
+      speed = -speed;
+    }
+
 
     turnMotor.set(PIDOutput);
-    driveMotor.set(speed * 0.15);
-    drivePIDController.setReference(speed, ControlType.kVelocity);
+    driveMotor.set(speed * 0.25);
 
-    SmartDashboard.putNumber("goal angle", goalAngle);
-    SmartDashboard.putNumber("current angle", currentAngle);
-    SmartDashboard.putNumber("speed", speed * 0.35);
-    SmartDashboard.putNumber("pid output", PIDOutput);
+    SmartDashboard.putNumber("ogD", goalAngle - currentAngle);
+    // SmartDashboard.putNumber("goal angle", goalAngle);
+    // SmartDashboard.putNumber("current angle", currentAngle);
+    SmartDashboard.putNumber("speed", speed * 0.15);
+    SmartDashboard.putBoolean("isRotating", isRotating);
+    // SmartDashboard.putNumber("pid output", PIDOutput);
 
     
 
