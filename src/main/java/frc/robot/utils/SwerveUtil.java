@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveUtil {
     public static double remapAngle(double currentAngle, double desiredAngle) {
-        double angleDifference = currentAngle - desiredAngle;
+        double angleDifference = desiredAngle - currentAngle;
         // return Math.abs(angleDifference) > 90 ? ((desiredAngle + 180) % 360) : desiredAngle;
         double displacement = ((angleDifference + 180) % 360) - 180;
 

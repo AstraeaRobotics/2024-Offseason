@@ -38,7 +38,7 @@ public class TeleopSwerve extends Command {
   
   public void execute() {
     if(Math.abs(m_driveX.getAsDouble()) > 0.2 || Math.abs(m_driveY.getAsDouble()) > 0.2) {
-      m_SwerveSubsystem.drive(m_driveX.getAsDouble(), m_driveY.getAsDouble(), -m_rotation.getAsDouble(), false);
+      m_SwerveSubsystem.drive(m_driveX.getAsDouble(), m_driveY.getAsDouble(), m_rotation.getAsDouble(), false);
     }
     else if(Math.abs(m_rotation.getAsDouble()) > 0.2) {
       m_SwerveSubsystem.drive(0, 0, m_rotation.getAsDouble(), true);

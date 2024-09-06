@@ -76,7 +76,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   private void configureDriveMotor() {
-    driveMotor.setInverted(false);
+    driveMotor.setInverted(isInverted);
     drivePIDController.setFeedbackDevice(driveEncoder);
 
     driveMotor.setSmartCurrentLimit(35);
@@ -91,6 +91,8 @@ public class SwerveModule extends SubsystemBase {
     drivePIDController.setD(DrivebaseModuleConstants.driveKD);
     drivePIDController.setFF(DrivebaseModuleConstants.driveKV);
 
+    driveMotor.setIdleMode(IdleMode.kBrake);
+
     driveMotor.burnFlash();
   }
 
@@ -102,10 +104,10 @@ public class SwerveModule extends SubsystemBase {
     return (turnEncoder.getPosition() + angularOffset) % 360;
   }
 
-  public void setState(SwerveModuleState state, boolean isRotating) {
+  public void setState(SwerveModuleState state) {
     // double rawAngle = (state.angle.getDegrees() + 360) % 360;
-    double goalAngle = state.angle.getDegrees() * -1;
-    double currentAngle = getAngle() - 180;
+    double goalAngle = state.angle.getDegrees() + 180;
+    double currentAngle = getAngle();
     double speed = 0;
 
 
@@ -115,19 +117,18 @@ public class SwerveModule extends SubsystemBase {
 
     speed = SwerveUtil.remapSpeed(goalAngle - currentAngle, state.speedMetersPerSecond);
 
-    if(isInverted && isRotating) {
-      speed = -speed;
-    }
+    // if(isInverted && isRotating) {
+    //   speed = -speed;
+    // }
 
 
-    turnMotor.set(PIDOutput);
+    turnMotor.set(turnPIDController.calculate(error, 0));
     driveMotor.set(speed * 0.25);
 
     SmartDashboard.putNumber("ogD", goalAngle - currentAngle);
     // SmartDashboard.putNumber("goal angle", goalAngle);
     // SmartDashboard.putNumber("current angle", currentAngle);
     SmartDashboard.putNumber("speed", speed * 0.15);
-    SmartDashboard.putBoolean("isRotating", isRotating);
     // SmartDashboard.putNumber("pid output", PIDOutput);
 
     

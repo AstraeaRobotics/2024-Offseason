@@ -47,40 +47,35 @@ public class SwerveSubsystem extends SubsystemBase {
 
     swerveModules = new SwerveModule[4];
 
-    swerveModules[0] = new SwerveModule(2, 1, 180, "front left", false); // Front left
-    swerveModules[1] = new SwerveModule(4, 3, 270, "front right", true); // Front right
-    swerveModules[2] = new SwerveModule(6, 5, 90, "back left", true); // Back left   
-    swerveModules[3] = new SwerveModule(8, 7, 0, "back right", false); // Back right
+    swerveModules[0] = new SwerveModule(2, 1, 270, "front left", false); // Front left
+    swerveModules[1] = new SwerveModule(4, 3, 0, "front right", false); // Front right
+    swerveModules[2] = new SwerveModule(6, 5, 180, "back left", false); // Back left   
+    swerveModules[3] = new SwerveModule(8, 7, 90, "back right", false); // Back right
 
     gyro.reset();
   }
 
   public void drive(double driveX, double driveY, double rotation, boolean isRotating) {
-    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
+    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
     // SmartDashboard.putNumber("driveX", driveX);
     // SmartDashboard.putNumber("drive y", driveY);
 
-    swerveModules[0].setState(swerveModuleStates[0], isRotating); // Front left
-    swerveModules[1].setState(swerveModuleStates[1], isRotating); // Front right
-    swerveModules[2].setState(swerveModuleStates[2], isRotating); // Back left
-    swerveModules[3].setState(swerveModuleStates[3], isRotating); // Back right
+    swerveModules[0].setState(swerveModuleStates[0]); // Front left
+    swerveModules[1].setState(swerveModuleStates[1]); // Front right
+    swerveModules[2].setState(swerveModuleStates[2]); // Back left
+    swerveModules[3].setState(swerveModuleStates[3]); // Back right
+
 
   }
 
   public double getHeading() {
-    return (gyro.getAngle() + 90) % 360;
+    return gyro.getYaw();
   }
 
   public void resetGyro() {
     gyro.reset();
   }
-
-  // ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(frontRightModuleState);
-
-  // double forward = chassisSpeeds.vxMetersPerSecond;
-  // double sideways = chassisSpeeds.vyMetersPerSecond;
-  // double angular = chassisSpeeds.omegaRadiansPerSecond;
 
   @Override
   public void periodic() {
