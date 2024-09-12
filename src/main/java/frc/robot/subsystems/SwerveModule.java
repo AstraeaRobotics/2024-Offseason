@@ -27,8 +27,7 @@ public class SwerveModule extends SubsystemBase {
   private CANSparkMax turnMotor;
   private CANSparkMax driveMotor;
 
-  // private SparkPIDController turnPIDController;
-  PIDController turnPIDController;
+  private PIDController turnPIDController;
   private SparkPIDController drivePIDController;
 
   private AbsoluteEncoder turnEncoder;
@@ -37,10 +36,8 @@ public class SwerveModule extends SubsystemBase {
   private int angularOffset;
   private String moduleName;
 
-  private boolean isInverted;
 
-
-  public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName, boolean isInverted) {
+  public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName) {
     turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
     driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
 
@@ -53,16 +50,13 @@ public class SwerveModule extends SubsystemBase {
     this.angularOffset = angularOffset;
     this.moduleName = moduleName;
 
-    this.isInverted = isInverted;
-
 
     configureTurnMotor();
     configureDriveMotor();
   }
 
   private void configureTurnMotor() {
-    turnMotor.setInverted(false);
-    // turnPIDController.setFeedbackDevice(turnEncoder);
+    turnPIDController.enableContinuousInput(0, 360);
 
     turnMotor.setSmartCurrentLimit(35);
     turnMotor.setIdleMode(IdleMode.kCoast);
@@ -71,12 +65,9 @@ public class SwerveModule extends SubsystemBase {
     turnEncoder.setVelocityConversionFactor(DrivebaseModuleConstants.kTurnEncoderVelocityFactor);
 
     turnMotor.burnFlash();
-
-    // Todo: need to set turn encoder position
   }
 
   private void configureDriveMotor() {
-    driveMotor.setInverted(isInverted);
     drivePIDController.setFeedbackDevice(driveEncoder);
 
     driveMotor.setSmartCurrentLimit(35);
@@ -105,35 +96,11 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setState(SwerveModuleState state) {
-    // double rawAngle = (state.angle.getDegrees() + 360) % 360;
-    double goalAngle = state.angle.getDegrees() + 180;
-    double currentAngle = getAngle();
-    double speed = 0;
+    double optimizedAngle = SwerveUtil.remapAngle(getAngle(), state.angle.getDegrees() + 180);
+    double optimizedSpeed = SwerveUtil.remapSpeed(state.angle.getDegrees() + 180 - getAngle(), state.speedMetersPerSecond);
 
-
-    // Turn PID
-    double error = SwerveUtil.remapAngle(currentAngle, goalAngle);
-    double PIDOutput = error * DrivebaseModuleConstants.turnKP;
-
-    speed = SwerveUtil.remapSpeed(goalAngle - currentAngle, state.speedMetersPerSecond);
-
-    // if(isInverted && isRotating) {
-    //   speed = -speed;
-    // }
-
-
-    turnMotor.set(turnPIDController.calculate(error, 0));
-    driveMotor.set(speed * 0.25);
-
-    SmartDashboard.putNumber("ogD", goalAngle - currentAngle);
-    // SmartDashboard.putNumber("goal angle", goalAngle);
-    // SmartDashboard.putNumber("current angle", currentAngle);
-    SmartDashboard.putNumber("speed", speed * 0.15);
-    // SmartDashboard.putNumber("pid output", PIDOutput);
-
-    
-
-    // speed numbers
+    turnMotor.set(-turnPIDController.calculate(getAngle(), optimizedAngle));
+    drivePIDController.setReference(optimizedSpeed, ControlType.kVelocity);
   }
 
   @Override

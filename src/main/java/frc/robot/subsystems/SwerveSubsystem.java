@@ -47,15 +47,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
     swerveModules = new SwerveModule[4];
 
-    swerveModules[0] = new SwerveModule(2, 1, 270, "front left", false); // Front left
-    swerveModules[1] = new SwerveModule(4, 3, 0, "front right", false); // Front right
-    swerveModules[2] = new SwerveModule(6, 5, 180, "back left", false); // Back left   
-    swerveModules[3] = new SwerveModule(8, 7, 90, "back right", false); // Back right
+    swerveModules[0] = new SwerveModule(2, 1, 270, "front left"); // Front left
+    swerveModules[1] = new SwerveModule(4, 3, 0, "front right"); // Front right
+    swerveModules[2] = new SwerveModule(6, 5, 180, "back left"); // Back left   
+    swerveModules[3] = new SwerveModule(8, 7, 90, "back right"); // Back right
 
     gyro.reset();
   }
 
-  public void drive(double driveX, double driveY, double rotation, boolean isRotating) {
+  public void drive(double driveX, double driveY, double rotation) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
     // SmartDashboard.putNumber("driveX", driveX);
