@@ -5,14 +5,20 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveUtil {
-    public static double remapAngle(double currentAngle, double desiredAngle) {
+    public static double[] optimizeModule(double currentAngle, double desiredAngle, double speed) {
+        double[] optimizedModule = new double[2];
         double angleDifference = desiredAngle - currentAngle;
-        return Math.abs(angleDifference) > 90 && Math.abs(angleDifference) < 270 ? (desiredAngle + 180) % 360 : desiredAngle;
-    }
+        
+        // Optimizes the desired angle so the module never turns more than 90 degrees
+        if(Math.abs(angleDifference) > 90 && Math.abs(angleDifference) < 270) {
+            optimizedModule[0] = (angleDifference + 180)  % 360;
+            optimizedModule[1] = -speed;
+        }
 
+        // Drive speed of module proportional to its closeness to desired angle to prevent slippage
+        optimizedModule[1] *= Math.cos(Math.abs(desiredAngle - optimizedModule[0]));
 
-    public static double remapSpeed(double displacement, double speed) {
-        return Math.abs(displacement) > 90 && Math.abs(displacement) < 270 ? speed : -speed;
+        return optimizedModule;
     }
 
 }

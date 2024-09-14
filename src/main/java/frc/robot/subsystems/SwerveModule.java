@@ -96,11 +96,10 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setState(SwerveModuleState state) {
-    double optimizedAngle = SwerveUtil.remapAngle(getAngle(), state.angle.getDegrees() + 180);
-    double optimizedSpeed = SwerveUtil.remapSpeed(state.angle.getDegrees() + 180 - getAngle(), state.speedMetersPerSecond);
+    double[] optimizedModule = SwerveUtil.optimizeModule(getAngle(), state.angle.getDegrees() + 180, state.speedMetersPerSecond);
 
-    turnMotor.set(-turnPIDController.calculate(getAngle(), optimizedAngle));
-    drivePIDController.setReference(optimizedSpeed, ControlType.kVelocity);
+    turnMotor.set(-turnPIDController.calculate(getAngle(), optimizedModule[0]));
+    drivePIDController.setReference(optimizedModule[1], ControlType.kVelocity);
   }
 
   @Override
