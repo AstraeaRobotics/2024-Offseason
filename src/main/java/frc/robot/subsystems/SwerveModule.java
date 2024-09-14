@@ -56,6 +56,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   private void configureTurnMotor() {
+    // Treats 0 and 360 as the same value
     turnPIDController.enableContinuousInput(0, 360);
 
     turnMotor.setSmartCurrentLimit(35);
@@ -70,7 +71,6 @@ public class SwerveModule extends SubsystemBase {
   private void configureDriveMotor() {
     drivePIDController.setFeedbackDevice(driveEncoder);
 
-    driveMotor.setSmartCurrentLimit(35);
 
     driveEncoder.setPositionConversionFactor(DrivebaseModuleConstants.kDriveEncoderPositionFactor);
     driveEncoder.setVelocityConversionFactor(DrivebaseModuleConstants.kDriveEncoderVelocityFactor);
@@ -82,7 +82,9 @@ public class SwerveModule extends SubsystemBase {
     drivePIDController.setD(DrivebaseModuleConstants.driveKD);
     drivePIDController.setFF(DrivebaseModuleConstants.driveKV);
 
+    driveMotor.setClosedLoopRampRate(8);
     driveMotor.setIdleMode(IdleMode.kBrake);
+    driveMotor.setSmartCurrentLimit(35);
 
     driveMotor.burnFlash();
   }
