@@ -47,16 +47,16 @@ public class SwerveSubsystem extends SubsystemBase {
 
     swerveModules = new SwerveModule[4];
 
-    swerveModules[0] = new SwerveModule(2, 1, 180, "front left"); // Front left
-    swerveModules[1] = new SwerveModule(4, 3, 270, "front right"); // Front right
-    swerveModules[2] = new SwerveModule(6, 5, 90, "back left"); // Back left   
-    swerveModules[3] = new SwerveModule(8, 7, 0, "back right"); // Back right
+    swerveModules[0] = new SwerveModule(2, 1, 270, "front left"); // Front left
+    swerveModules[1] = new SwerveModule(4, 3, 0, "front right"); // Front right
+    swerveModules[2] = new SwerveModule(6, 5, 180, "back left"); // Back left   
+    swerveModules[3] = new SwerveModule(8, 7, 90, "back right"); // Back right
 
     gyro.reset();
   }
 
   public void drive(double driveX, double driveY, double rotation) {
-    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
+    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
     // SmartDashboard.putNumber("driveX", driveX);
     // SmartDashboard.putNumber("drive y", driveY);
@@ -65,16 +65,22 @@ public class SwerveSubsystem extends SubsystemBase {
     // swerveModules[1].setState(swerveModuleStates[1]); // Front right
     // swerveModules[2].setState(swerveModuleStates[2]); // Back left
     swerveModules[3].setState(swerveModuleStates[3]); // Back right
+
+
   }
 
   public double getHeading() {
-    return gyro.getAngle();
+    return gyro.getYaw();
   }
 
-
+  public void resetGyro() {
+    gyro.reset();
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("current heading", getHeading());
+
   }
 }

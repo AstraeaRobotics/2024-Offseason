@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.DrivebaseModuleConstants;
 import frc.robot.utils.SwerveUtil;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -26,8 +27,7 @@ public class SwerveModule extends SubsystemBase {
   private CANSparkMax turnMotor;
   private CANSparkMax driveMotor;
 
-  // private SparkPIDController turnPIDController;
-  PIDController turnPIDController;
+  private PIDController turnPIDController;
   private SparkPIDController drivePIDController;
 
   private AbsoluteEncoder turnEncoder;
@@ -35,6 +35,7 @@ public class SwerveModule extends SubsystemBase {
 
   private int angularOffset;
   private String moduleName;
+
 
   public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName) {
     turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
@@ -49,13 +50,13 @@ public class SwerveModule extends SubsystemBase {
     this.angularOffset = angularOffset;
     this.moduleName = moduleName;
 
+
     configureTurnMotor();
     configureDriveMotor();
   }
 
   private void configureTurnMotor() {
-    turnMotor.setInverted(false);
-    // turnPIDController.setFeedbackDevice(turnEncoder);
+    turnPIDController.enableContinuousInput(0, 360);
 
     turnMotor.setSmartCurrentLimit(35);
     turnMotor.setIdleMode(IdleMode.kCoast);
@@ -64,12 +65,9 @@ public class SwerveModule extends SubsystemBase {
     turnEncoder.setVelocityConversionFactor(DrivebaseModuleConstants.kTurnEncoderVelocityFactor);
 
     turnMotor.burnFlash();
-
-    // Todo: need to set turn encoder position
   }
 
   private void configureDriveMotor() {
-    driveMotor.setInverted(true);
     drivePIDController.setFeedbackDevice(driveEncoder);
 
     driveMotor.setSmartCurrentLimit(35);
@@ -84,6 +82,8 @@ public class SwerveModule extends SubsystemBase {
     drivePIDController.setD(DrivebaseModuleConstants.driveKD);
     drivePIDController.setFF(DrivebaseModuleConstants.driveKV);
 
+    driveMotor.setIdleMode(IdleMode.kBrake);
+
     driveMotor.burnFlash();
   }
 
@@ -96,21 +96,10 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setState(SwerveModuleState state) {
-    double desiredAngle = state.angle.getDegrees() * -1;
-    double currentAngle = getAngle() - 180;
-    double goalAngle = SwerveUtil.remapAngle(currentAngle, desiredAngle);
-    
+    double[] optimizedModule = SwerveUtil.optimizeModule(getAngle(), state.angle.getDegrees() + 180, state.speedMetersPerSecond);
 
-    double PIDOutput = turnPIDController.calculate(currentAngle, goalAngle);
-    // double speed = SwerveUtil.remapSpeed(desiredAngle, state.speedMetersPerSecond);
-
-    turnMotor.set(PIDOutput);
-    // drivePIDController.setReference(speed, ControlType.kVelocity);
-    SmartDashboard.putNumber("current angle", currentAngle);
-    SmartDashboard.putNumber("raw controller angle", desiredAngle);
-    SmartDashboard.putNumber("goal angle", goalAngle);
-    SmartDashboard.putNumber("pid output", PIDOutput);
-
+    turnMotor.set(-turnPIDController.calculate(getAngle(), optimizedModule[0]));
+    drivePIDController.setReference(optimizedModule[1], ControlType.kVelocity);
   }
 
   @Override
