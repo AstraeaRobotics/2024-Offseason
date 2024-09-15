@@ -36,8 +36,10 @@ public class SwerveModule extends SubsystemBase {
   private int angularOffset;
   private String moduleName;
 
+  private double driveKV;
 
-  public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName) {
+
+  public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName, double driveKV) {
     turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
     driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
 
@@ -49,6 +51,8 @@ public class SwerveModule extends SubsystemBase {
 
     this.angularOffset = angularOffset;
     this.moduleName = moduleName;
+
+    this.driveKV = driveKV;
 
 
     configureTurnMotor();
@@ -71,7 +75,6 @@ public class SwerveModule extends SubsystemBase {
   private void configureDriveMotor() {
     drivePIDController.setFeedbackDevice(driveEncoder);
 
-
     driveEncoder.setPositionConversionFactor(DrivebaseModuleConstants.kDriveEncoderPositionFactor);
     driveEncoder.setVelocityConversionFactor(DrivebaseModuleConstants.kDriveEncoderVelocityFactor);
 
@@ -80,7 +83,7 @@ public class SwerveModule extends SubsystemBase {
     drivePIDController.setP(DrivebaseModuleConstants.driveKP);
     drivePIDController.setI(DrivebaseModuleConstants.driveKI);
     drivePIDController.setD(DrivebaseModuleConstants.driveKD);
-    drivePIDController.setFF(DrivebaseModuleConstants.driveKV);
+    drivePIDController.setFF(driveKV);
 
     driveMotor.setClosedLoopRampRate(8);
     driveMotor.setIdleMode(IdleMode.kBrake);
@@ -97,15 +100,25 @@ public class SwerveModule extends SubsystemBase {
     return (turnEncoder.getPosition() + angularOffset) % 360;
   }
 
+  public double getTurnPIDOutput(double desiredAngle) {
+    return -turnPIDController.calculate(getAngle(), desiredAngle);
+  }
+
+  public double getDriveFFOutput(double speed) {
+    return MathUtil.clamp(speed * driveKV, -10, 10);
+  }
+
   public void setState(SwerveModuleState state) {
     double[] optimizedModule = SwerveUtil.optimizeModule(getAngle(), state.angle.getDegrees() + 180, state.speedMetersPerSecond);
 
-    turnMotor.set(-turnPIDController.calculate(getAngle(), optimizedModule[0]));
-    drivePIDController.setReference(optimizedModule[1], ControlType.kVelocity);
+    turnMotor.set(getTurnPIDOutput(optimizedModule[0]));
+    // drivePIDController.setReference(optimizedModule[1], ControlType.kVelocity);
+    driveMotor.setVoltage(getDriveFFOutput(optimizedModule[1]));
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Drive Velocity", driveEncoder.getVelocity());
   }
 }
