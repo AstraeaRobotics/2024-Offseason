@@ -105,5 +105,7 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("output current", driveMotor.getOutputCurrent());
+    SmartDashboard.putNumber("output voltage", driveMotor.getBusVoltage() * driveMotor.getAppliedOutput());
   }
 }
