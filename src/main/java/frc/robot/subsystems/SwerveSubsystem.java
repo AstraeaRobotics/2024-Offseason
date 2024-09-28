@@ -58,8 +58,6 @@ public class SwerveSubsystem extends SubsystemBase {
   public void drive(double driveX, double driveY, double rotation) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
-    // SmartDashboard.putNumber("driveX", driveX);
-    // SmartDashboard.putNumber("drive y", driveY);
 
     swerveModules[0].setState(swerveModuleStates[0]); // Front left
     swerveModules[1].setState(swerveModuleStates[1]); // Front right

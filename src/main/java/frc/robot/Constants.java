@@ -42,7 +42,7 @@ public final class Constants {
 
     // FeedForward Constants
     public static final double turnKV = 0.00005; // 0.31
-    public static final double driveKV = 0.25; // 0.45
+    public static final double driveKV = 0.65; // 0.45
 
   }
 
@@ -50,5 +50,68 @@ public final class Constants {
     // Physical constants
     public static final double kWheelBase = Units.inchesToMeters(20);/* the distance between the front and rear wheels */
     public static final double kTrackWidth = Units.inchesToMeters(22); /* the distance between left and right wheels */
+  }
+
+  public static class ShooterConstants {
+
+    public static final double kShooterVelocity = 0; // TODO: determine shooter velocity
+
+    public static final double kShooterSpeed = 80;
+    public static final double kPoopSpeed = 35;
+    public static final double kTrapSpeed = 40;
+
+
+    public static final double kPivotMotorGearRatio = 260;
+    public static final double kPivotMotorConversionFactor = (360) / kPivotMotorGearRatio;
+    public static final double kPivotMinPosition = 0;
+    public static final double kPivotMaxPosition = 45;
+    
+    public static final double kPivotSpeed = 0.05;
+    public static final double kPivotTolerance = 0.1;
+
+    public static final double kPivotGroundPosition = 1.625;
+
+    public enum ShooterStates {
+      kGround(kPivotGroundPosition, -1, -1),
+      kSource(44.8, 0, 1.08585),
+      kSpeaker(30, 1, 2.032), // originally 31.5
+      kFeed(17, 1, 1),
+      kSpeakerSide(32.07, 1, 2.032),
+      kSpeaker2(24.2, 1, 2.032), // 26.2
+      kAmp(44.88,  2, 0.889),
+      kTrap(0, 3, 1.4351),
+      kNull(0, 5, 0);
+
+
+      private double pivotSetpoint;
+      private int pipelineID;
+      private double targetHeight;
+
+      private ShooterStates(double pivotSetpoint, int pipelineID, double targetHeight) {
+        this.pivotSetpoint = pivotSetpoint;
+        this.pipelineID = pipelineID;
+        this.targetHeight = targetHeight;
+      }
+
+      public double getPivotSetpoint() {
+        return pivotSetpoint;
+      }
+
+      public int getPipelineID() {
+        return pipelineID;
+      }
+
+     public double getTargetHeight() {
+        return targetHeight;
+      }
+    }
+  }
+
+  public static class IntakeConstants {
+    public static final double intakeKS = 0.24;
+    public static final double intakeKV = 0.133;
+
+    public static final double preIntakeKS = .13;
+    public static final double preIntakeKV = .1241;
   }
 }
