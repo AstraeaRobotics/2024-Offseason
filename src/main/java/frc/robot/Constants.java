@@ -73,11 +73,11 @@ public final class Constants {
 
     public enum ShooterStates {
       kGround(kPivotGroundPosition, -1, -1),
-      kSource(44.8, 0, 1.08585),
-      kSpeaker(30, 1, 2.032), // originally 31.5
+      kSource(46.35, 0, 1.08585),
+      kSpeaker(31.5, 1, 2.032), // originally 31.5
       kFeed(17, 1, 1),
       kSpeakerSide(32.07, 1, 2.032),
-      kSpeaker2(24.2, 1, 2.032), // 26.2
+      kSpeaker2(26.2, 1, 2.032), // 26.2
       kAmp(44.88,  2, 0.889),
       kTrap(0, 3, 1.4351),
       kNull(0, 5, 0);

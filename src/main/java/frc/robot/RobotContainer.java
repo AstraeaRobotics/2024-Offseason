@@ -23,6 +23,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -63,6 +64,11 @@ public class RobotContainer {
   public static final JoystickButton kOperator12 = new JoystickButton(operatorGamepad, 12);
 
   private final JoystickButton kCross = new JoystickButton(m_driverController, PS4Controller.Button.kCross.value);
+  private final JoystickButton kCircle = new JoystickButton(m_driverController, PS4Controller.Button.kCircle.value);
+  private final JoystickButton kSquare = new JoystickButton(m_driverController, PS4Controller.Button.kSquare.value);
+  private final JoystickButton kTriangle = new JoystickButton(m_driverController, PS4Controller.Button.kTriangle.value);
+  private final JoystickButton kL1 = new JoystickButton(m_driverController, PS4Controller.Button.kL1.value);
+  private final JoystickButton kR1 = new JoystickButton(m_driverController, PS4Controller.Button.kR1.value);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -83,8 +89,6 @@ public class RobotContainer {
   private void configureBindings() {
     kCross.onTrue(new ResetGyro(m_SwerveSubsystem));
 
-    // kOperator1.whileTrue(new IntakeNote(m_intakeSubsystem, 120, 120));
-    // kOperator1.whileTrue(new ParallelCommandGroup(new IntakeNote(m_intakeSubsystem, 120, 120), new ShooterIntake(m_shooterSubsystem))); // INT
     kOperator1.whileTrue(new ShooterIntake(m_shooterSubsystem)); // INT
     kOperator2.whileTrue(new ShootNote(m_shooterSubsystem)); // SHT
     kOperator3.whileTrue(new ShootAmp(m_shooterSubsystem)); // AST
@@ -97,7 +101,13 @@ public class RobotContainer {
     kOperator10.onTrue(new ManualRotation(m_shooterSubsystem, true));
     kOperator11.onTrue(new ManualRotation(m_shooterSubsystem, false)); // RST
     kOperator12.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
-    // kOperator12.onTrue(new OneNoteAuto(m_SwerveSubsystem, m_shooterSubsystem));
+
+    kCircle.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
+    kSquare.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker));
+    kL1.whileTrue(new ShooterIntake(m_shooterSubsystem));
+    kR1.whileTrue(new ShootNote(m_shooterSubsystem));
+    kTriangle.whileTrue(new ShootAmp(m_shooterSubsystem));
+
   }
 
   /**
@@ -108,7 +118,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     // return Autos.exampleAuto(m_exampleSubsystem);
-    // return new OneNoteAuto(m_SwerveSubsystem, m_shooterSubsystem);
-    return null;
+    return new OneNoteAuto(m_SwerveSubsystem, m_shooterSubsystem);
+    // return null;
   }
 }
