@@ -13,13 +13,13 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class TeleopSwerve extends Command {
   /** Creates a new TeleopSwerve. */
   SwerveSubsystem m_SwerveSubsystem;
-  
+
   DoubleSupplier m_driveX;
   DoubleSupplier m_driveY;
   DoubleSupplier m_rotation;
 
-
-  public TeleopSwerve(SwerveSubsystem swerveSub, DoubleSupplier driveX, DoubleSupplier driveY, DoubleSupplier rotation) {
+  public TeleopSwerve(SwerveSubsystem swerveSub, DoubleSupplier driveX, DoubleSupplier driveY,
+      DoubleSupplier rotation) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_driveX = driveX;
     m_driveY = driveY;
@@ -31,31 +31,27 @@ public class TeleopSwerve extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  
-  public void execute() {
-    // if(Math.abs(m_driveX.getAsDouble()) > 0.2 || Math.abs(m_driveY.getAsDouble()) > 0.2) {
-    //   m_SwerveSubsystem.drive(m_driveX.getAsDouble(), m_driveY.getAsDouble(), m_rotation.getAsDouble());
-    // }
-    // else if(Math.abs(m_rotation.getAsDouble()) > 0.2) {
-    //   m_SwerveSubsystem.drive(0, 0, m_rotation.getAsDouble());
-    // }
-    // else{
-    //   m_SwerveSubsystem.drive(0, 0, 0);
-    // }
-    double finalDriveX = m_driveX.getAsDouble() > 0.2 ? m_driveX.getAsDouble() : 0;
-    double finalDriveY = m_driveY.getAsDouble() > 0.2 ? m_driveY.getAsDouble() : 0;
-    double finalDriveRotation = m_rotation.getAsDouble() > 0.2 ? m_rotation.getAsDouble() : 0;
 
-    m_SwerveSubsystem.drive(finalDriveX, finalDriveY, finalDriveRotation);
+  public void execute() {
+    if (Math.abs(m_driveX.getAsDouble()) > 0.2 || Math.abs(m_driveY.getAsDouble()) > 0.2) {
+      m_SwerveSubsystem.drive(m_driveX.getAsDouble(), m_driveY.getAsDouble(), m_rotation.getAsDouble());
+      // m_SwerveSubsystem.drive(0, -1 * Math.signum(m_driveY.getAsDouble()), 0);
+    } else if (Math.abs(m_rotation.getAsDouble()) > 0.2) {
+      m_SwerveSubsystem.drive(0, 0, m_rotation.getAsDouble());
+    } else {
+      m_SwerveSubsystem.drive(0, 0, 0);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override

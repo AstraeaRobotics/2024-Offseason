@@ -38,7 +38,6 @@ public class SwerveModule extends SubsystemBase {
 
   private double driveKV;
 
-
   public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName, double driveKV) {
     turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
     driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
@@ -53,7 +52,6 @@ public class SwerveModule extends SubsystemBase {
     this.moduleName = moduleName;
 
     this.driveKV = driveKV;
-
 
     configureTurnMotor();
     configureDriveMotor();
@@ -92,7 +90,7 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.burnFlash();
   }
 
-  public double getDistance(){
+  public double getDistance() {
     return driveEncoder.getPosition();
   }
 
@@ -109,7 +107,8 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setState(SwerveModuleState state) {
-    double[] optimizedModule = SwerveUtil.optimizeModule(getAngle(), state.angle.getDegrees() + 180, state.speedMetersPerSecond);
+    double[] optimizedModule = SwerveUtil.optimizeModule(getAngle(), state.angle.getDegrees() + 180,
+        state.speedMetersPerSecond);
 
     turnMotor.set(getTurnPIDOutput(optimizedModule[0]));
     // drivePIDController.setReference(optimizedModule[1], ControlType.kVelocity);
@@ -119,6 +118,7 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Drive Velocity", driveEncoder.getVelocity());
+    SmartDashboard.putNumber("output current", driveMotor.getOutputCurrent());
+    SmartDashboard.putNumber("output voltage", driveMotor.getBusVoltage() * driveMotor.getAppliedOutput());
   }
 }

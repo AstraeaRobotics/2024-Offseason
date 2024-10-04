@@ -40,11 +40,11 @@ public class IntakeSubsystem extends SubsystemBase {
     preIntakeEncoder.setVelocityConversionFactor(.0167);
   }
 
-  public void spinPreIntake(double speed){
+  public void spinPreIntake(double speed) {
     preIntakeMotor.set(speed);
   }
 
-  public void spinIntake(double speed){
+  public void spinIntake(double speed) {
     intakeMotor.set(speed);
   }
 
@@ -64,7 +64,7 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor.setVoltage(volts);
   }
 
-  public void setVoltagePreInt(double volts){
+  public void setVoltagePreInt(double volts) {
     preIntakeMotor.setVoltage(volts);
   }
 
@@ -72,7 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMotor.setVoltage(intakeFeedForward.calculate(speed));
   }
 
-  public void setPreIntake(double speed){
+  public void setPreIntake(double speed) {
     preIntakeMotor.setVoltage(preIntakeFeedForward.calculate(speed));
   }
 
@@ -80,7 +80,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return intakeEncoder.getVelocity();
   }
 
-  public double getPreIntakeVelocity(){
+  public double getPreIntakeVelocity() {
     return preIntakeEncoder.getVelocity();
   }
 

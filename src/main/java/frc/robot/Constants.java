@@ -7,11 +7,15 @@ package frc.robot;
 import edu.wpi.first.math.util.Units;
 
 /**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
+ * The Constants class provides a convenient place for teams to hold robot-wide
+ * numerical or boolean
+ * constants. This class should not be used for any other purpose. All constants
+ * should be declared
  * globally (i.e. public static). Do not put anything functional in this class.
  *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
+ * <p>
+ * It is advised to statically import this class (or one of its inner classes)
+ * wherever the
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
@@ -29,7 +33,7 @@ public final class Constants {
     public static final int kTurnEncoderVelocityFactor = 60;
 
     public static final double kDriveEncoderPositionFactor = (1 / kDriveGearRatio) * 2 * Math.PI * (kWheelDiameter / 2);
-    public static final double kDriveEncoderVelocityFactor = 1/(60 * kDriveGearRatio);
+    public static final double kDriveEncoderVelocityFactor = 1 / (60 * kDriveGearRatio);
 
     // PID Constants (change later)
     public static final double turnKP = 0.004;
@@ -40,21 +44,17 @@ public final class Constants {
     public static final double driveKI = 0;
     public static final double driveKD = 0;
 
-    // Drive FeedForward Constants
-    // public static final double turnKV = 0.00005; // 0.31
-    // public static final double driveKV = 0.45;
-
-    public static final double fRDriveKV = 0.1 + (5 / 11.37);
-    public static final double fLDriveKV = 0.12 + (5 / 11.05);
-    public static final double bRDriveKV = 0.11 + (5 / 10.9);
-    public static final double bLDriveKV = 0.11 + (5 / 11.58);
-
+    // FeedForward Constants
+    public static final double turnKV = 0.00005; // 0.31
+    public static final double driveKV = 0.65; // 0.45
 
   }
 
   public static class DrivebaseConstants {
     // Physical constants
-    public static final double kWheelBase = Units.inchesToMeters(20);/* the distance between the front and rear wheels */
+    public static final double kWheelBase = Units.inchesToMeters(20);/*
+                                                                      * the distance between the front and rear wheels
+                                                                      */
     public static final double kTrackWidth = Units.inchesToMeters(22); /* the distance between left and right wheels */
   }
 
@@ -66,12 +66,11 @@ public final class Constants {
     public static final double kPoopSpeed = 35;
     public static final double kTrapSpeed = 40;
 
-
     public static final double kPivotMotorGearRatio = 260;
     public static final double kPivotMotorConversionFactor = (360) / kPivotMotorGearRatio;
     public static final double kPivotMinPosition = 0;
     public static final double kPivotMaxPosition = 45;
-    
+
     public static final double kPivotSpeed = 0.05;
     public static final double kPivotTolerance = 0.1;
 
@@ -79,15 +78,14 @@ public final class Constants {
 
     public enum ShooterStates {
       kGround(kPivotGroundPosition, -1, -1),
-      kSource(0.2, 0, 1.08585),
-      kSpeaker(31.5, 1, 2.032), // originally 31
+      kSource(46.35, 0, 1.08585),
+      kSpeaker(31.5, 1, 2.032), // originally 31.5
       kFeed(17, 1, 1),
       kSpeakerSide(32.07, 1, 2.032),
-      kSpeaker2(26.2, 1, 2.032),
-      kAmp(44.88,  2, 0.889),
+      kSpeaker2(26.2, 1, 2.032), // 26.2
+      kAmp(44.88, 2, 0.889),
       kTrap(0, 3, 1.4351),
       kNull(0, 5, 0);
-
 
       private double pivotSetpoint;
       private int pipelineID;
@@ -107,7 +105,7 @@ public final class Constants {
         return pipelineID;
       }
 
-     public double getTargetHeight() {
+      public double getTargetHeight() {
         return targetHeight;
       }
     }
@@ -119,8 +117,7 @@ public final class Constants {
 
     public static final double preIntakeKS = .13;
     public static final double preIntakeKV = .1241;
-  }
-
+  }<<<<<<<HEAD
 
   public static class ElevatorConstants {
 
@@ -128,16 +125,16 @@ public final class Constants {
     // public static final int kRightMotorCanId = 16;
 
     public static final double kConversionFactor = .05;
-    
+
     public static final double kP = 0.008;
     public static final double kI = 0;
     public static final double kD = 0;
 
     public static final double kSpeed = 0.2;
     public static final double kMinSpeed = 0.15;
-    
+
     public static final double kMaxEncoderValue = 70;
     public static final double kMinEncoderValue = 0;
 
-  }
+  }=======>>>>>>>develop
 }

@@ -27,8 +27,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.ShooterConstants.ShooterStates;
-// import frc.robot.util.LimelightUtil;
-
 
 public class ShooterSubsystem extends SubsystemBase {
   CANSparkMax indexerMotor;
@@ -58,17 +56,17 @@ public class ShooterSubsystem extends SubsystemBase {
   double manualOffset;
 
   boolean resetting;
-  
+
   MotorOutputConfigs pivotCurrent;
 
   public ShooterSubsystem() {
-    indexerMotor = new CANSparkMax(11, MotorType.kBrushless);  
+    indexerMotor = new CANSparkMax(11, MotorType.kBrushless);
     pivotEncoder = indexerMotor.getAbsoluteEncoder(Type.kDutyCycle);
 
     bottomShooter = new TalonFX(13);
     topShooter = new TalonFX(12);
 
-    pivotMotor = new TalonFX(14);    
+    pivotMotor = new TalonFX(14);
 
     m_brake = new NeutralOut();
 
@@ -94,7 +92,7 @@ public class ShooterSubsystem extends SubsystemBase {
     indexerMotor.setIdleMode(IdleMode.kCoast);
     indexerMotor.setSmartCurrentLimit(40);
     indexerMotor.setInverted(false);
-    
+
     pivotEncoder.setPositionConversionFactor(48);
 
     bottomShooter.setNeutralMode(NeutralModeValue.Coast);
@@ -137,13 +135,12 @@ public class ShooterSubsystem extends SubsystemBase {
     topShooter.setInverted(true);
   }
 
-
   public void prepShoot() {
     bottomShooter.setInverted(false);
     topShooter.setInverted(false);
   }
 
-  public void prepAmp(){
+  public void prepAmp() {
 
     topShooter.setInverted(true);
   }
@@ -152,16 +149,16 @@ public class ShooterSubsystem extends SubsystemBase {
     topShooter.setInverted(false);
   }
 
-  public void spinIndexer(double speed){
+  public void spinIndexer(double speed) {
     indexerMotor.set(speed);
   }
 
-  public void spinBottomShooter(double speed){
+  public void spinBottomShooter(double speed) {
     // bottomShooter.setControl(m_bottomVelocity.withVelocity(speed).withFeedForward(ff));
     bottomShooter.setControl(m_bottomVelocity.withVelocity(speed));
   }
 
-  public void spinTopShooter(double speed){
+  public void spinTopShooter(double speed) {
     // topShooter.setControl(m_topVelocity.withVelocity(speed).withFeedForward(ff));
     topShooter.setControl(m_topVelocity.withVelocity(speed));
   }
@@ -216,15 +213,19 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void incrementPivot(double increment) {
-    if (getPivotPosition() < 70) manualOffset += increment;
+    if (getPivotPosition() < 70)
+      manualOffset += increment;
 
-    if (getPivotPosition() > 70) manualOffset = 70;
+    if (getPivotPosition() > 70)
+      manualOffset = 70;
   }
 
   public void decrementPivot(double decrement) {
-    if (getPivotPosition() >= decrement) manualOffset -= decrement;
+    if (getPivotPosition() >= decrement)
+      manualOffset -= decrement;
 
-    if (getPivotPosition() < 0) manualOffset = 0;
+    if (getPivotPosition() < 0)
+      manualOffset = 0;
   }
 
   public void setManualOffset(double newPosition) {
@@ -235,7 +236,7 @@ public class ShooterSubsystem extends SubsystemBase {
     desiredPosition = newPosition;
   }
 
-  public void setPivotPosition (double newPosition) {
+  public void setPivotPosition(double newPosition) {
     pivotMotor.setPosition(newPosition);
   }
 
@@ -247,10 +248,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
     desiredPosition = m_state.getPivotSetpoint();
 
-    if (desiredPosition < ShooterConstants.kPivotGroundPosition) desiredPosition = ShooterConstants.kPivotGroundPosition;
-    if (desiredPosition > 52) desiredPosition = 52;
+    if (desiredPosition < ShooterConstants.kPivotGroundPosition)
+      desiredPosition = ShooterConstants.kPivotGroundPosition;
+    if (desiredPosition > 52)
+      desiredPosition = 52;
   }
-  
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Pivot Relative Encoder Position: ", getPivotPosition());
@@ -258,14 +261,15 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot Error", getPivotError());
     SmartDashboard.putNumber("Desired Position: ", desiredPosition);
     SmartDashboard.putBoolean("Resetting", resetting);
-    // SmartDashboard.putNumber("Ty", LimelightUtil.getTy());
     checkDesiredPosition();
 
-    if (!resetting || getState() != ShooterStates.kNull) spinPivotMotor(desiredPosition + manualOffset);
+    if (!resetting || getState() != ShooterStates.kNull)
+      spinPivotMotor(desiredPosition + manualOffset);
     if (getState() == ShooterStates.kNull) {
       setPivotBrake();
       stopPivot();
     }
-    if (resetting) stopPivot();
+    if (resetting)
+      stopPivot();
   }
 }
