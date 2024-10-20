@@ -71,6 +71,9 @@ public final class Constants {
 
     public static final double kPivotGroundPosition = 1.625;
 
+    public static final double kShooterRegSlope = 0; // TODO: determine
+    public static final double kShooterRegInt = 26.2;
+
     public enum ShooterStates {
       kGround(kPivotGroundPosition, -1, -1),
       kSource(46.35, 0, 1.08585),

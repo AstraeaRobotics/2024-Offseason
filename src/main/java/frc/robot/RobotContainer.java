@@ -18,7 +18,7 @@ import frc.robot.commands.shooter.ShootNote;
 import frc.robot.commands.shooter.ShooterIntake;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.TeleopSwerve;
-import frc.robot.commands.vision.AlignToShoot;
+import frc.robot.commands.vision.RotationalAlign;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -108,7 +108,7 @@ public class RobotContainer {
     // kL1.whileTrue(new ShooterIntake(m_shooterSubsystem));
     // kR1.whileTrue(new ShootNote(m_shooterSubsystem));
     // kTriangle.whileTrue(new ShootAmp(m_shooterSubsystem));
-    kCircle.whileTrue(new AlignToShoot(m_SwerveSubsystem));
+    kCircle.whileTrue(new RotationalAlign(m_SwerveSubsystem));
 
   }
 

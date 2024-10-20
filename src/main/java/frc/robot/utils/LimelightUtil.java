@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.Constants.ShooterConstants;
 
 /** Add your docs here. */
 public class LimelightUtil {
@@ -26,12 +27,16 @@ public class LimelightUtil {
         return getTable().getEntry("ty").getDouble(0);
     }
 
-    public static double getTa() {
+    public static double getTa() { // april tag area
         return getTable().getEntry("ta").getDouble(0);
     }
     
     public static int getTagId() {
         double tagId = getTable().getEntry("tid").getDouble(-1);
         return (int) tagId;
+    }
+
+    public static double getShooterAngle(double ta) {
+        return ShooterConstants.kShooterRegSlope * ta + ShooterConstants.kShooterRegInt;
     }
 }
