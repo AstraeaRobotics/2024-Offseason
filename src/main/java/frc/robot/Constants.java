@@ -80,7 +80,8 @@ public final class Constants {
       kSpeaker2(26.2, 1, 2.032), // 26.2
       kAmp(44.88,  2, 0.889),
       kTrap(0, 3, 1.4351),
-      kNull(0, 5, 0);
+      kNull(0, 5, 0),
+      kFeed2(47.5, 0, 0);
 
 
       private double pivotSetpoint;

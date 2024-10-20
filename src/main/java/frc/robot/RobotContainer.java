@@ -18,6 +18,7 @@ import frc.robot.commands.shooter.ShootNote;
 import frc.robot.commands.shooter.ShooterIntake;
 import frc.robot.commands.swerve.ResetGyro;
 import frc.robot.commands.swerve.TeleopSwerve;
+import frc.robot.commands.vision.AlignToShoot;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -89,24 +90,25 @@ public class RobotContainer {
   private void configureBindings() {
     kCross.onTrue(new ResetGyro(m_SwerveSubsystem));
 
-    kOperator1.whileTrue(new ShooterIntake(m_shooterSubsystem)); // INT
-    kOperator2.whileTrue(new ShootNote(m_shooterSubsystem)); // SHT
-    kOperator3.whileTrue(new ShootAmp(m_shooterSubsystem)); // AST
-    kOperator4.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kGround)); // GRD
-    kOperator5.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker)); // SPK
-    kOperator6.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kAmp)); // AMP
-    kOperator7.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeakerSide)); // SID
-    kOperator8.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kFeed));
-    kOperator9.whileTrue(new PostIntake(m_shooterSubsystem)); // PI
-    kOperator10.onTrue(new ManualRotation(m_shooterSubsystem, true));
-    kOperator11.onTrue(new ManualRotation(m_shooterSubsystem, false)); // RST
-    kOperator12.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
+    // kOperator1.whileTrue(new ShooterIntake(m_shooterSubsystem)); // INT
+    // kOperator2.whileTrue(new ShootNote(m_shooterSubsystem)); // SHT
+    // kOperator3.whileTrue(new ShootAmp(m_shooterSubsystem)); // AST
+    // kOperator4.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kGround)); // GRD
+    // kOperator5.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker)); // SPK
+    // kOperator6.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kAmp)); // AMP
+    // kOperator7.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker2)); // SID
+    // kOperator8.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kFeed));
+    // kOperator9.whileTrue(new PostIntake(m_shooterSubsystem)); // PI
+    // kOperator10.onTrue(new ManualRotation(m_shooterSubsystem, true));
+    // kOperator11.onTrue(new ManualRotation(m_shooterSubsystem, false)); // RST
+    // kOperator12.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
 
-    kCircle.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
-    kSquare.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker));
-    kL1.whileTrue(new ShooterIntake(m_shooterSubsystem));
-    kR1.whileTrue(new ShootNote(m_shooterSubsystem));
-    kTriangle.whileTrue(new ShootAmp(m_shooterSubsystem));
+    // kCircle.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
+    // kSquare.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker));
+    // kL1.whileTrue(new ShooterIntake(m_shooterSubsystem));
+    // kR1.whileTrue(new ShootNote(m_shooterSubsystem));
+    // kTriangle.whileTrue(new ShootAmp(m_shooterSubsystem));
+    kCircle.whileTrue(new AlignToShoot(m_SwerveSubsystem));
 
   }
 

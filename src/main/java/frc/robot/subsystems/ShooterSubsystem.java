@@ -257,6 +257,7 @@ public class ShooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Pivot Error", getPivotError());
     SmartDashboard.putNumber("Desired Position: ", desiredPosition);
     SmartDashboard.putBoolean("Resetting", resetting);
+    SmartDashboard.putNumber("shooter velocity", getShooterVelocity());
     checkDesiredPosition();
 
     if (!resetting || getState() != ShooterStates.kNull) spinPivotMotor(desiredPosition + manualOffset);
