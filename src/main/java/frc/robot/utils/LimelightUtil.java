@@ -36,7 +36,7 @@ public class LimelightUtil {
         return (int) tagId;
     }
 
-    public static double getShooterAngle(double ta) {
-        return ShooterConstants.kShooterRegSlope * ta + ShooterConstants.kShooterRegInt;
+    public static double getShooterAngle(double area) {
+        return 24.8 + (-0.483 * area) + (11.6 * area * area);
     }
 }

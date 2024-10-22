@@ -5,18 +5,21 @@
 package frc.robot.commands.vision;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.shooter.ShootNote;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AlignToShoot extends ParallelCommandGroup {
-  /** Creates a new AlignToShoot. */
-
-  public AlignToShoot(SwerveSubsystem m_SwerveSubsystem, ShooterSubsystem m_ShooterSubsystem) {
+public class AlignAndPivot extends SequentialCommandGroup {
+  /** Creates a new AlignAndPivot. */
+  public AlignAndPivot(SwerveSubsystem m_SwerveSubsystem, ShooterSubsystem m_ShooterSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new RotationalAlign(m_SwerveSubsystem), new PivotAlign(m_ShooterSubsystem));
+    addCommands(new ParallelDeadlineGroup(new WaitCommand(0.5), new RotationalAlign(m_SwerveSubsystem)), new ParallelCommandGroup(new WaitCommand(0.5), new PivotAlign(m_ShooterSubsystem)), new ShootNote(m_ShooterSubsystem));
   }
 }

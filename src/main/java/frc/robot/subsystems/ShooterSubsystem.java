@@ -244,7 +244,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void checkDesiredPosition() {
 
-    desiredPosition = m_state.getPivotSetpoint();
+    // desiredPosition = m_state.getPivotSetpoint();
 
     if (desiredPosition < ShooterConstants.kPivotGroundPosition) desiredPosition = ShooterConstants.kPivotGroundPosition;
     if (desiredPosition > 52) desiredPosition = 52;

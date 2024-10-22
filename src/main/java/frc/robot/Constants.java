@@ -54,7 +54,7 @@ public final class Constants {
 
   public static class ShooterConstants {
 
-    public static final double kShooterVelocity = 0; // TODO: determine shooter velocity
+    // public static final double kShooterVelocity = 0; // TODO: determine shooter velocity
 
     public static final double kShooterSpeed = 80;
     public static final double kPoopSpeed = 35;

@@ -28,7 +28,8 @@ public class SetState extends InstantCommand {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_shooterSubsystem.setState(m_state);
+    // m_shooterSubsystem.setState(m_state);
+    m_shooterSubsystem.setDesiredPosition(m_state.getPivotSetpoint());
     m_shooterSubsystem.setManualOffset(0);
     //LimelightUtil.setPipeline(m_shooterSubsystem.getState());
   }
