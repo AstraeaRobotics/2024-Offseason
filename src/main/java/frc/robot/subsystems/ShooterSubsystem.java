@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.ShooterConstants.ShooterStates;
+import frc.robot.utils.LimelightUtil;
 
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -241,6 +242,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void setReset(boolean isReset) {
     resetting = isReset;
   }
+
 
   public void checkDesiredPosition() {
 

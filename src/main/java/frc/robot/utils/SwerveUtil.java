@@ -18,7 +18,7 @@ public class SwerveUtil {
         }
 
         // Drive speed of module proportional to its closeness to desired angle to prevent slippage
-        // optimizedModule[1] *= Math.abs(Math.cos(Math.abs(desiredAngle - optimizedModule[0])));
+        // optimizedModule[1] *= Math.abs(Math.cos(Math.abs(currentAngle - optimizedModule[0])));
 
         return optimizedModule;
     }

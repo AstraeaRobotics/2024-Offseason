@@ -95,18 +95,38 @@ public class RobotContainer {
     kCross.onTrue(new ResetGyro(m_SwerveSubsystem));
 
     kOperator1.whileTrue(new ShooterIntake(m_shooterSubsystem)); // INT
+<<<<<<< Updated upstream
+=======
+    kOperator1.whileTrue(new ParallelCommandGroup(new IntakeNote(m_intakeSubsystem, 70, 70), new ShooterIntake(m_shooterSubsystem)));
+>>>>>>> Stashed changes
     kOperator2.whileTrue(new ShootNote(m_shooterSubsystem)); // SHT
     kOperator3.whileTrue(new ShootAmp(m_shooterSubsystem)); // AST
     kOperator4.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kGround)); // GRD
     kOperator5.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker)); // SPK
     kOperator6.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kAmp)); // AMP
     kOperator7.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker2)); // SID
+<<<<<<< Updated upstream
     // kOperator8.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kFeed));
     // kOperator8.onTrue(new AlignAndPivot(m_SwerveSubsystem, m_shooterSubsystem));
+=======
+    kOperator8.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kFeed));
+>>>>>>> Stashed changes
     kOperator9.whileTrue(new PostIntake(m_shooterSubsystem)); // PI
     kOperator10.onTrue(new ManualRotation(m_shooterSubsystem, true));
     kOperator11.onTrue(new ManualRotation(m_shooterSubsystem, false)); // RST
     kOperator12.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
+<<<<<<< Updated upstream
+=======
+
+    // kCircle.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
+    // kSquare.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker));
+    // kL1.whileTrue(new ShooterIntake(m_shooterSubsystem));
+    // kR1.whileTrue(new ShootNote(m_shooterSubsystem));
+    // kTriangle.whileTrue(new ShootAmp(m_shooterSubsystem));
+    kCircle.whileTrue(new AlignToShoot(m_SwerveSubsystem));
+    kTriangle.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kDynamicSpeaker));
+    kR1.whileTrue(new ParallelCommandGroup(new IntakeNote(m_intakeSubsystem, 70, 70), new ShooterIntake(m_shooterSubsystem)));
+>>>>>>> Stashed changes
 
     kR1.whileTrue(new ParallelCommandGroup(new IntakeNote(m_intakeSubsystem, 70, 70), new ShooterIntake(m_shooterSubsystem)));
     kL1.whileTrue(new PostIntake(m_shooterSubsystem));
@@ -123,7 +143,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     // return Autos.exampleAuto(m_exampleSubsystem);
-    return new OneNoteAuto(m_SwerveSubsystem, m_shooterSubsystem);
-    // return null;
+    // return new OneNoteAuto(m_SwerveSubsystem, m_shooterSubsystem);
+    return null;
   }
 }
