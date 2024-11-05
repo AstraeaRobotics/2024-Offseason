@@ -18,6 +18,7 @@ import frc.robot.utils.SwerveUtil;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -93,6 +94,13 @@ public class SwerveModule extends SubsystemBase {
 
   public double getAngle() {
     return (turnEncoder.getPosition() + angularOffset) % 360;
+  }
+
+  public SwerveModulePosition getModulePosition() {
+    double position = getDistance();
+    Rotation2d angle = Rotation2d.fromDegrees(-getAngle());
+
+    return new SwerveModulePosition(position, angle);
   }
 
   public void setState(SwerveModuleState state) {

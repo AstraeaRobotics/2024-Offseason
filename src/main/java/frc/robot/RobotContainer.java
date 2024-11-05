@@ -6,8 +6,6 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants.ShooterStates;
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.auto.paths.OneNoteAuto;
 import frc.robot.commands.intakeCommands.IntakeNote;
 import frc.robot.commands.intakeCommands.ReverseIntake;
@@ -23,7 +21,6 @@ import frc.robot.commands.vision.AlignAndPivot;
 // import frc.robot.commands.vision.AlignToShoot;
 import frc.robot.commands.vision.PivotAlign;
 import frc.robot.commands.vision.RotationalAlign;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -94,45 +91,19 @@ public class RobotContainer {
   private void configureBindings() {
     kCross.onTrue(new ResetGyro(m_SwerveSubsystem));
 
-    kOperator1.whileTrue(new ShooterIntake(m_shooterSubsystem)); // INT
-<<<<<<< Updated upstream
-=======
+    // kOperator1.whileTrue(new ShooterIntake(m_shooterSubsystem)); // INT
     kOperator1.whileTrue(new ParallelCommandGroup(new IntakeNote(m_intakeSubsystem, 70, 70), new ShooterIntake(m_shooterSubsystem)));
->>>>>>> Stashed changes
     kOperator2.whileTrue(new ShootNote(m_shooterSubsystem)); // SHT
     kOperator3.whileTrue(new ShootAmp(m_shooterSubsystem)); // AST
     kOperator4.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kGround)); // GRD
     kOperator5.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker)); // SPK
     kOperator6.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kAmp)); // AMP
     kOperator7.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker2)); // SID
-<<<<<<< Updated upstream
-    // kOperator8.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kFeed));
-    // kOperator8.onTrue(new AlignAndPivot(m_SwerveSubsystem, m_shooterSubsystem));
-=======
     kOperator8.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kFeed));
->>>>>>> Stashed changes
     kOperator9.whileTrue(new PostIntake(m_shooterSubsystem)); // PI
     kOperator10.onTrue(new ManualRotation(m_shooterSubsystem, true));
     kOperator11.onTrue(new ManualRotation(m_shooterSubsystem, false)); // RST
     kOperator12.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
-<<<<<<< Updated upstream
-=======
-
-    // kCircle.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
-    // kSquare.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker));
-    // kL1.whileTrue(new ShooterIntake(m_shooterSubsystem));
-    // kR1.whileTrue(new ShootNote(m_shooterSubsystem));
-    // kTriangle.whileTrue(new ShootAmp(m_shooterSubsystem));
-    kCircle.whileTrue(new AlignToShoot(m_SwerveSubsystem));
-    kTriangle.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kDynamicSpeaker));
-    kR1.whileTrue(new ParallelCommandGroup(new IntakeNote(m_intakeSubsystem, 70, 70), new ShooterIntake(m_shooterSubsystem)));
->>>>>>> Stashed changes
-
-    kR1.whileTrue(new ParallelCommandGroup(new IntakeNote(m_intakeSubsystem, 70, 70), new ShooterIntake(m_shooterSubsystem)));
-    kL1.whileTrue(new PostIntake(m_shooterSubsystem));
-    kCircle.onTrue(new ShootNote(m_shooterSubsystem));
-    kSquare.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
-    kTriangle.whileTrue(new ReverseIntake(m_intakeSubsystem));
   }
 
   /**
