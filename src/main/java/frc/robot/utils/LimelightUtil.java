@@ -37,12 +37,7 @@ public class LimelightUtil {
     }
 
     public static double getShooterAngle(double area) {
-<<<<<<< Updated upstream
-        return 27.5 + (-0.483 * area) + (11.6 * area * area);
-        // 24.8
-=======
         return 24.8 + (-0.483 * area) + (11.6 * area * area);
         // 24.8 + -0.483x + 11.6x^2
->>>>>>> Stashed changes
     }
 }

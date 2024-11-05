@@ -26,12 +26,7 @@ public class RotationalAlign extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-<<<<<<< Updated upstream:src/main/java/frc/robot/commands/vision/RotationalAlign.java
-    double driveYOutput = 0;
-    double driveXOutput = LimelightUtil.getTx() * .05;
-=======
     double driveRotationOutput = LimelightUtil.getTx() * .06;
->>>>>>> Stashed changes:src/main/java/frc/robot/commands/vision/AlignToShoot.java
 
     // if(LimelightUtil.getTa() != 0) {
     //   driveYOutput = (LimelightUtil.getTa() - 8) * 0.035;
