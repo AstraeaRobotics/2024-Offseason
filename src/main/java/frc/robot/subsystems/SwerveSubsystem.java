@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,11 +33,9 @@ import com.kauailabs.navx.frc.AHRS;
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
   SwerveDriveKinematics kinematics;
-  SwerveDriveOdometry odometry;
+  // SwerveDriveOdometry odometry;
   AHRS gyro;
 
-  SwerveDrivePoseEstimator swerveDrivePoseEstimator;
-  SwerveDriveOdometry swerveDriveOdometry;
 
   SwerveModule[] swerveModules;
   SwerveModule backLeftModule;
@@ -55,6 +55,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   PhotonCamera camera;
 
+  SwerveDrivePoseEstimator swerveDrivePoseEstimator;
+  PhotonPoseEstimator photonPoseEstimator;
+
   Pose2d odomPose;
   Pose2d visionPose;
 
@@ -63,6 +66,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public SwerveSubsystem() {
     kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
 
     gyro = new AHRS();
 
@@ -73,7 +78,7 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveModules[3] = new SwerveModule(8, 7, 90, "back right"); // Back right
 
     swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
-    swerveDriveOdometry = new SwerveDriveOdometry(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+    photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, cam, robotToCam);
 
     camera = new PhotonCamera("limelight");
 
@@ -111,7 +116,6 @@ public class SwerveSubsystem extends SubsystemBase {
     positions[1] = swerveModules[1].getModulePosition();
     positions[2] = swerveModules[2].getModulePosition();
     positions[3] = swerveModules[3].getModulePosition();
-    
     return positions;
   }
 
