@@ -5,6 +5,7 @@
 package frc.robot.commands.vision;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Constants.ShooterConstants.ShooterStates;
 import frc.robot.commands.shooter.Shoot;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.utils.LimelightUtil;
@@ -26,7 +27,10 @@ public class PivotAlign extends InstantCommand {
   public void initialize() {
     double desiredPosition = LimelightUtil.getShooterAngle(LimelightUtil.getTa());
 
-    m_ShooterSubsystem.setDesiredPosition(desiredPosition);
-    m_ShooterSubsystem.setManualOffset(0);
+    if(LimelightUtil.getTa() != 0) {
+      m_ShooterSubsystem.setState(ShooterStates.kSpeaker);
+      m_ShooterSubsystem.setDesiredPosition(desiredPosition);
+      m_ShooterSubsystem.setManualOffset(0);
+    }
   }
 }
