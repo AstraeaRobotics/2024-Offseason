@@ -8,6 +8,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
 
+import java.util.List;
 import java.util.function.DoubleSupplier;
 
 import org.photonvision.PhotonCamera;
@@ -32,6 +34,7 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.estimation.VisionEstimation;
 import org.photonvision.proto.Photon;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.kauailabs.navx.frc.AHRS;
@@ -74,6 +77,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // Swerve drive
     kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
     gyro = new AHRS();
+    camera = new PhotonCamera("limelight");
 
     swerveModules = new SwerveModule[4];
     swerveModules[0] = new SwerveModule(2, 1, 270, "front left"); // Front left
@@ -82,7 +86,7 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveModules[3] = new SwerveModule(8, 7, 90, "back right"); // Back right
     
     // Pose estimation
-    camera = new PhotonCamera("limelight");
+    
     AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0, 0.5), new Rotation3d(0, 0, 0));
 
@@ -130,12 +134,7 @@ public class SwerveSubsystem extends SubsystemBase {
     return swerveDrivePoseEstimator.getEstimatedPosition();
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
-    visionPose = getRobotPose2d();
-
+  public void updateVisionPose() {
     var results = camera.getAllUnreadResults();
     var latestResult = results.get(camera.getAllUnreadResults().size());
 
@@ -148,6 +147,16 @@ public class SwerveSubsystem extends SubsystemBase {
         });
     }
 
-    publisher.set(visionPose);
+  public void updateOdometry(double heading, SwerveModulePosition[] modulePositions) {
+    swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    updateOdometry(-getHeading(), getModulePositions());
+    updateVisionPose();
+
+    publisher.set(getRobotPose2d());
   }
 }
