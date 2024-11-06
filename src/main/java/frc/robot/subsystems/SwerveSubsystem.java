@@ -9,7 +9,10 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -25,9 +28,12 @@ import frc.robot.Constants.DrivebaseConstants;
 import java.util.function.DoubleSupplier;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.estimation.VisionEstimation;
 import org.photonvision.proto.Photon;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.kauailabs.navx.frc.AHRS;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -65,10 +71,8 @@ public class SwerveSubsystem extends SubsystemBase {
   StructPublisher<Pose2d> arrayPublisher;
 
   public SwerveSubsystem() {
+    // Swerve drive
     kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
-    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-
-
     gyro = new AHRS();
 
     swerveModules = new SwerveModule[4];
@@ -76,11 +80,14 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveModules[1] = new SwerveModule(4, 3, 0, "front right"); // Front right
     swerveModules[2] = new SwerveModule(6, 5, 180, "back left"); // Back left   
     swerveModules[3] = new SwerveModule(8, 7, 90, "back right"); // Back right
+    
+    // Pose estimation
+    camera = new PhotonCamera("limelight");
+    AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0, 0.5), new Rotation3d(0, 0, 0));
 
     swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
-    photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, cam, robotToCam);
-
-    camera = new PhotonCamera("limelight");
+    photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.LOWEST_AMBIGUITY, robotToCam);
 
     odomPose = new Pose2d();
     visionPose = new Pose2d();
@@ -127,7 +134,20 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
-    odomPose = getRobotPose2d();
+    visionPose = getRobotPose2d();
+
+    var results = camera.getAllUnreadResults();
+    var latestResult = results.get(camera.getAllUnreadResults().size());
+
+    if(latestResult.hasTargets()) {
+      var visionEstPose = photonPoseEstimator.update(latestResult);
+
+      visionEstPose.ifPresent(
+        est -> {
+            swerveDrivePoseEstimator.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds);
+        });
+    }
+
     publisher.set(visionPose);
   }
 }
