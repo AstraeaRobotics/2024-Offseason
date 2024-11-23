@@ -52,28 +52,27 @@ public class SwerveModule extends SubsystemBase {
     this.moduleName = moduleName;
 
 
-    configureTurnMotor();
-    configureDriveMotor();
+    configureMotors();
   }
 
-  private void configureTurnMotor() {
+  private void configureMotors() {
+    // Turn motor configuration
     turnPIDController.enableContinuousInput(0, 360);
-
-    turnMotor.setSmartCurrentLimit(35);
-    turnMotor.setIdleMode(IdleMode.kCoast);
 
     turnEncoder.setPositionConversionFactor(DrivebaseModuleConstants.kTurnEncoderPositionFactor);
     turnEncoder.setVelocityConversionFactor(DrivebaseModuleConstants.kTurnEncoderVelocityFactor);
 
-    turnMotor.burnFlash();
-  }
+    turnMotor.setSmartCurrentLimit(35);
+    turnMotor.setClosedLoopRampRate(8);
+    turnMotor.setIdleMode(IdleMode.kCoast);
 
-  private void configureDriveMotor() {
+    turnMotor.burnFlash();
+
+    // Drive motor configuration
     drivePIDController.setFeedbackDevice(driveEncoder);
 
     driveEncoder.setPositionConversionFactor(DrivebaseModuleConstants.kDriveEncoderPositionFactor);
     driveEncoder.setVelocityConversionFactor(DrivebaseModuleConstants.kDriveEncoderVelocityFactor);
-
     driveEncoder.setPosition(0);
 
     drivePIDController.setP(DrivebaseModuleConstants.driveKP);
@@ -82,8 +81,8 @@ public class SwerveModule extends SubsystemBase {
     drivePIDController.setFF(DrivebaseModuleConstants.driveKV);
 
     driveMotor.setClosedLoopRampRate(8);
-    driveMotor.setIdleMode(IdleMode.kBrake);
     driveMotor.setSmartCurrentLimit(35);
+    driveMotor.setIdleMode(IdleMode.kBrake);
 
     driveMotor.burnFlash();
   }
