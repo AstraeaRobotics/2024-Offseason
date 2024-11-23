@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
@@ -26,13 +27,16 @@ import java.util.function.DoubleSupplier;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
   SwerveDriveKinematics kinematics;
-  // SwerveDriveOdometry odometry;
   AHRS gyro;
-
 
   SwerveModule[] swerveModules;
   SwerveModule backLeftModule;
@@ -50,16 +54,15 @@ public class SwerveSubsystem extends SubsystemBase {
   public SwerveModuleState frontLeftModuleState;
   public SwerveModuleState frontRightModuleState;
 
-
   SwerveDrivePoseEstimator swerveDrivePoseEstimator;
-
   Pose2d pose;
+
+  ChassisSpeeds robotRelativeSpeeds;
 
   StructPublisher<Pose2d> publisher;
   StructPublisher<Pose2d> arrayPublisher;
 
   public SwerveSubsystem() {
-    // Swerve drive
     kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
     gyro = new AHRS();
 
@@ -70,19 +73,52 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveModules[3] = new SwerveModule(8, 7, 90, "back right"); // Back right
     
     // Pose estimation
-    
     // AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     // Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0, 0.5), new Rotation3d(0, 0, 0));
-
     swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
     pose = new Pose2d();
+
+    robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, Rotation2d.fromDegrees(0));
+
+    // Pathplanner
+
+    AutoBuilder.configureHolonomic(
+      this::getPose, 
+      this::resetRobotPose, 
+      this::getRobotRelativeSpeeds, 
+      this::runPPL, 
+      new HolonomicPathFollowerConfig(3.6, 0.57, new ReplanningConfig(true, true)), 
+      () -> {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+          return alliance.get() == DriverStation.Alliance.Red;
+        }
+        return false;}, 
+      this);
     
     gyro.reset();
   }
 
   public void drive(double driveX, double driveY, double rotation) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
+    // robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
+
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
+    
+
+    swerveModules[0].setState(swerveModuleStates[0]); // Front left
+    swerveModules[1].setState(swerveModuleStates[1]); // Front right
+    swerveModules[2].setState(swerveModuleStates[2]); // Back left
+    swerveModules[3].setState(swerveModuleStates[3]); // Back right
+  }
+
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    return robotRelativeSpeeds;
+  }
+
+  public void runPPL(ChassisSpeeds speeds) {
+    SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
+    robotRelativeSpeeds = kinematics.toChassisSpeeds(swerveModuleStates);
 
     swerveModules[0].setState(swerveModuleStates[0]); // Front left
     swerveModules[1].setState(swerveModuleStates[1]); // Front right
@@ -107,15 +143,25 @@ public class SwerveSubsystem extends SubsystemBase {
     return positions;
   }
 
-  public Pose2d getRobotPose2d() {
-    return swerveDrivePoseEstimator.getEstimatedPosition();
+  public Pose2d getPose() {
+    return pose;
+  }
+
+  public void updatePose() {
+    pose = swerveDrivePoseEstimator.getEstimatedPosition();
+  }
+
+  public void resetRobotPose(Pose2d pose) {
+    swerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(getHeading()), getModulePositions(), pose);
+    updatePose();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
+    updatePose();
 
-    publisher.set(getRobotPose2d());
+    publisher.set(pose);
   }
 }

@@ -24,6 +24,9 @@ import frc.robot.commands.vision.RotationalAlign;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
@@ -90,6 +93,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
     kCross.onTrue(new ResetGyro(m_SwerveSubsystem));
+    kCircle.onTrue(new PathPlannerAuto("Line"));
 
     // kOperator1.whileTrue(new ShooterIntake(m_shooterSubsystem)); // INT
     kOperator1.whileTrue(new ParallelCommandGroup(new IntakeNote(m_intakeSubsystem, 70, 70), new ShooterIntake(m_shooterSubsystem)));
@@ -113,8 +117,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    // return Autos.exampleAuto(m_exampleSubsystem);
-    // return new OneNoteAuto(m_SwerveSubsystem, m_shooterSubsystem);
+    // return new PathPlannerAuto("Line");
     return null;
   }
 }
