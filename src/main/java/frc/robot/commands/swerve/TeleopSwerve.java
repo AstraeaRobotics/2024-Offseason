@@ -48,7 +48,7 @@ public class TeleopSwerve extends Command {
     //   m_SwerveSubsystem.drive(0, 0, 0);
     // }
     double driveX = m_driveX.getAsDouble() > 0.2 ? m_driveX.getAsDouble() : 0;
-    double driveY = m_driveX.getAsDouble() > 0.2 ? m_driveY.getAsDouble() : 0;
+    double driveY = m_driveY.getAsDouble() > 0.2 ? m_driveY.getAsDouble() : 0;
     double rotation = m_rotation.getAsDouble() > 0.2 ? m_driveX.getAsDouble() : 0;
 
     m_SwerveSubsystem.drive(driveX, driveY, rotation);
