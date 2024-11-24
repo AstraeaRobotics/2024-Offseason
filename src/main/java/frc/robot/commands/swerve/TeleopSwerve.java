@@ -37,16 +37,21 @@ public class TeleopSwerve extends Command {
   @Override
   
   public void execute() {
-    if(Math.abs(m_driveX.getAsDouble()) > 0.2 || Math.abs(m_driveY.getAsDouble()) > 0.2) {
-      m_SwerveSubsystem.drive(m_driveX.getAsDouble(), m_driveY.getAsDouble(), m_rotation.getAsDouble());
-      // m_SwerveSubsystem.drive(0, -1 * Math.signum(m_driveY.getAsDouble()), 0);
-    }
-    else if(Math.abs(m_rotation.getAsDouble()) > 0.2) {
-      m_SwerveSubsystem.drive(0, 0, m_rotation.getAsDouble());
-    }
-    else{
-      m_SwerveSubsystem.drive(0, 0, 0);
-    }
+    // if(Math.abs(m_driveX.getAsDouble()) > 0.2 || Math.abs(m_driveY.getAsDouble()) > 0.2) {
+    //   m_SwerveSubsystem.drive(m_driveX.getAsDouble(), m_driveY.getAsDouble(), m_rotation.getAsDouble());
+    //   // m_SwerveSubsystem.drive(0, -1 * Math.signum(m_driveY.getAsDouble()), 0);
+    // }
+    // else if(Math.abs(m_rotation.getAsDouble()) > 0.2) {
+    //   m_SwerveSubsystem.drive(0, 0, m_rotation.getAsDouble());
+    // }
+    // else{
+    //   m_SwerveSubsystem.drive(0, 0, 0);
+    // }
+    double driveX = m_driveX.getAsDouble() > 0.2 ? m_driveX.getAsDouble() : 0;
+    double driveY = m_driveX.getAsDouble() > 0.2 ? m_driveY.getAsDouble() : 0;
+    double rotation = m_rotation.getAsDouble() > 0.2 ? m_driveX.getAsDouble() : 0;
+
+    m_SwerveSubsystem.drive(driveX, driveY, rotation);
   }
 
   // Called once the command ends or is interrupted.
