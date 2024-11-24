@@ -55,7 +55,6 @@ public class SwerveSubsystem extends SubsystemBase {
   public SwerveModuleState frontRightModuleState;
 
   SwerveDrivePoseEstimator swerveDrivePoseEstimator;
-  Pose2d pose;
 
   ChassisSpeeds robotRelativeSpeeds;
 
@@ -76,7 +75,6 @@ public class SwerveSubsystem extends SubsystemBase {
     // AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     // Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0, 0.5), new Rotation3d(0, 0, 0));
     swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
-    pose = new Pose2d();
 
     robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, Rotation2d.fromDegrees(0));
 
@@ -86,7 +84,7 @@ public class SwerveSubsystem extends SubsystemBase {
       this::getPose, 
       this::resetRobotPose, 
       this::getRobotRelativeSpeeds, 
-      this::runPPL, 
+      this::drivePPL, 
       new HolonomicPathFollowerConfig(3.6, 0.57, new ReplanningConfig(true, true)), 
       () -> {
         var alliance = DriverStation.getAlliance();
@@ -101,29 +99,27 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void drive(double driveX, double driveY, double rotation) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
-    // robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
-
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
     
+    setModuleStates(swerveModuleStates);
+  }
 
-    swerveModules[0].setState(swerveModuleStates[0]); // Front left
-    swerveModules[1].setState(swerveModuleStates[1]); // Front right
-    swerveModules[2].setState(swerveModuleStates[2]); // Back left
-    swerveModules[3].setState(swerveModuleStates[3]); // Back right
+  public void drivePPL(ChassisSpeeds speeds) {
+    SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
+    robotRelativeSpeeds = kinematics.toChassisSpeeds(swerveModuleStates);
+
+    setModuleStates(swerveModuleStates);
+  }
+
+  public void setModuleStates(SwerveModuleState[] moduleStates) {
+    swerveModules[0].setState(moduleStates[0]);
+    swerveModules[1].setState(moduleStates[1]);
+    swerveModules[2].setState(moduleStates[2]);
+    swerveModules[3].setState(moduleStates[3]);
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return robotRelativeSpeeds;
-  }
-
-  public void runPPL(ChassisSpeeds speeds) {
-    SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
-    robotRelativeSpeeds = kinematics.toChassisSpeeds(swerveModuleStates);
-
-    swerveModules[0].setState(swerveModuleStates[0]); // Front left
-    swerveModules[1].setState(swerveModuleStates[1]); // Front right
-    swerveModules[2].setState(swerveModuleStates[2]); // Back left
-    swerveModules[3].setState(swerveModuleStates[3]); // Back right
   }
 
   public double getHeading() {
@@ -144,24 +140,18 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return pose;
+    return swerveDrivePoseEstimator.getEstimatedPosition();
   }
 
-  public void updatePose() {
-    pose = swerveDrivePoseEstimator.getEstimatedPosition();
-  }
-
-  public void resetRobotPose(Pose2d pose) {
+  private void resetRobotPose(Pose2d pose) {
     swerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(getHeading()), getModulePositions(), pose);
-    updatePose();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
-    updatePose();
 
-    publisher.set(pose);
+    publisher.set(getPose());
   }
 }
