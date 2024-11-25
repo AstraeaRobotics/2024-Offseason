@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,23 +12,15 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
 
-import java.util.List;
-import java.util.function.DoubleSupplier;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -49,10 +39,10 @@ public class SwerveSubsystem extends SubsystemBase {
   Translation2d m_backLeftLocation = new Translation2d(-DrivebaseConstants.kWheelBase / 2, -DrivebaseConstants.kTrackWidth / 2);
   Translation2d m_backRightLocation = new Translation2d(-DrivebaseConstants.kWheelBase / 2, DrivebaseConstants.kTrackWidth / 2); 
 
-  public SwerveModuleState backLeftModuleState;
-  public SwerveModuleState backRightModuleState;
-  public SwerveModuleState frontLeftModuleState;
-  public SwerveModuleState frontRightModuleState;
+  SwerveModuleState backLeftModuleState;
+  SwerveModuleState backRightModuleState;
+  SwerveModuleState frontLeftModuleState;
+  SwerveModuleState frontRightModuleState;
 
   SwerveDrivePoseEstimator swerveDrivePoseEstimator;
 
@@ -71,14 +61,11 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveModules[2] = new SwerveModule(6, 5, 180, "back left"); // Back left   
     swerveModules[3] = new SwerveModule(8, 7, 90, "back right"); // Back right
     
-    // Pose estimation
-    // AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    // Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0, 0.5), new Rotation3d(0, 0, 0));
     swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
 
-    robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, Rotation2d.fromDegrees(0));
 
     // Pathplanner
+    robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, Rotation2d.fromDegrees(0));
 
     AutoBuilder.configureHolonomic(
       this::getPose, 
@@ -112,10 +99,9 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void setModuleStates(SwerveModuleState[] moduleStates) {
-    swerveModules[0].setState(moduleStates[0]);
-    swerveModules[1].setState(moduleStates[1]);
-    swerveModules[2].setState(moduleStates[2]);
-    swerveModules[3].setState(moduleStates[3]);
+    for(int i = 0; i < moduleStates.length; i++) {
+      swerveModules[i].setState(moduleStates[i]);
+    }
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
@@ -132,10 +118,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
-    positions[0] = swerveModules[0].getModulePosition();
-    positions[1] = swerveModules[1].getModulePosition();
-    positions[2] = swerveModules[2].getModulePosition();
-    positions[3] = swerveModules[3].getModulePosition();
+
+    for(int i = 0; i < swerveModules.length; i++) {
+      positions[i] = swerveModules[i].getModulePosition();
+    }
+    
     return positions;
   }
 
@@ -151,7 +138,6 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
-
     publisher.set(getPose());
   }
 }
