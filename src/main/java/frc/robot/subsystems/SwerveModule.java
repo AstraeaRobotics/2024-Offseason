@@ -114,5 +114,9 @@ public class SwerveModule extends SubsystemBase {
     // This method will be called once per scheduler run
     // SmartDashboard.putNumber("output current", driveMotor.getOutputCurrent());
     // SmartDashboard.putNumber("output voltage", driveMotor.getBusVoltage() * driveMotor.getAppliedOutput());
+
+    SmartDashboard.putString("Module", moduleName);
+    SmartDashboard.putNumber("Turn", turnEncoder.getPosition());
+    SmartDashboard.putNumber("Drive", driveEncoder.getVelocity());
   }
 }

@@ -75,27 +75,29 @@ public final class Constants {
     public static final double kShooterRegInt = 26.2;
 
     public enum ShooterStates {
-      kGround(kPivotGroundPosition, -1, -1),
-      kSource(46.35, 0, 1.08585),
-      kSpeaker(31.5, 1, 2.032), // originally 31.5
-      kFeed(17, 1, 1),
-      kSpeakerSide(32.07, 1, 2.032),
-      kSpeaker2(26.2, 1, 2.032), // 26.2
-      kAmp(44.88,  2, 0.889),
-      kTrap(0, 3, 1.4351),
-      kNull(0, 5, 0),
-      kFeed2(47.5, 0, 0),
-      kDynamicSpeaker(0, 0, 0);
+      kGround(kPivotGroundPosition, -1, -1, "Ground"),
+      kSource(46.35, 0, 1.08585, "Source"),
+      kSpeaker(31.5, 1, 2.032, "Speaker"), // originally 31.5
+      kFeed(17, 1, 1, "Feed"),
+      kSpeakerSide(32.07, 1, 2.032, "SpeakerSide"),
+      kSpeaker2(26.2, 1, 2.032, "Speaker2"), // 26.2
+      kAmp(44.88,  2, 0.889, "Amp"),
+      kTrap(0, 3, 1.4351, "Trap"),
+      kNull(0, 5, 0, "Null"),
+      kFeed2(47.5, 0, 0, "Feed2"),
+      kDynamicSpeaker(0, 0, 0, "Dynamic Speaker");
 
 
       private double pivotSetpoint;
       private int pipelineID;
       private double targetHeight;
+      private String name;
 
-      private ShooterStates(double pivotSetpoint, int pipelineID, double targetHeight) {
+      private ShooterStates(double pivotSetpoint, int pipelineID, double targetHeight, String name) {
         this.pivotSetpoint = pivotSetpoint;
         this.pipelineID = pipelineID;
         this.targetHeight = targetHeight;
+        this.name = name;
       }
 
       public double getPivotSetpoint() {
@@ -108,6 +110,10 @@ public final class Constants {
 
      public double getTargetHeight() {
         return targetHeight;
+      }
+
+      public String getName() {
+        return name;
       }
     }
   }
