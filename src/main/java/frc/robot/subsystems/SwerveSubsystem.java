@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,23 +12,15 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.Publisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
 
-import java.util.List;
-import java.util.function.DoubleSupplier;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -49,10 +39,10 @@ public class SwerveSubsystem extends SubsystemBase {
   Translation2d m_backLeftLocation = new Translation2d(-DrivebaseConstants.kWheelBase / 2, -DrivebaseConstants.kTrackWidth / 2);
   Translation2d m_backRightLocation = new Translation2d(-DrivebaseConstants.kWheelBase / 2, DrivebaseConstants.kTrackWidth / 2); 
 
-  public SwerveModuleState backLeftModuleState;
-  public SwerveModuleState backRightModuleState;
-  public SwerveModuleState frontLeftModuleState;
-  public SwerveModuleState frontRightModuleState;
+  SwerveModuleState backLeftModuleState;
+  SwerveModuleState backRightModuleState;
+  SwerveModuleState frontLeftModuleState;
+  SwerveModuleState frontRightModuleState;
 
   SwerveDrivePoseEstimator swerveDrivePoseEstimator;
 
@@ -71,19 +61,17 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveModules[2] = new SwerveModule(6, 5, 180, "back left"); // Back left   
     swerveModules[3] = new SwerveModule(8, 7, 90, "back right"); // Back right
     
-    // Pose estimation
     swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
-    publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
 
-    robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, Rotation2d.fromDegrees(0));
 
     // Pathplanner
+    robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, Rotation2d.fromDegrees(0));
 
     AutoBuilder.configureHolonomic(
       this::getPose, 
       this::resetRobotPose, 
       this::getRobotRelativeSpeeds, 
-      this::runPPL, 
+      this::drivePPL, 
       new HolonomicPathFollowerConfig(3.6, 0.57, new ReplanningConfig(true, true)), 
       () -> {
         var alliance = DriverStation.getAlliance();
@@ -100,25 +88,24 @@ public class SwerveSubsystem extends SubsystemBase {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
     
+    setModuleStates(swerveModuleStates);
+  }
 
-    swerveModules[0].setState(swerveModuleStates[0]); // Front left
-    swerveModules[1].setState(swerveModuleStates[1]); // Front right
-    // swerveModules[2].setState(swerveModuleStates[2]); // Back left
-    swerveModules[3].setState(swerveModuleStates[3]); // Back right
+  public void drivePPL(ChassisSpeeds speeds) {
+    SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
+    robotRelativeSpeeds = kinematics.toChassisSpeeds(swerveModuleStates);
+
+    setModuleStates(swerveModuleStates);
+  }
+
+  public void setModuleStates(SwerveModuleState[] moduleStates) {
+    for(int i = 0; i < moduleStates.length; i++) {
+      swerveModules[i].setState(moduleStates[i]);
+    }
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return robotRelativeSpeeds;
-  }
-
-  public void runPPL(ChassisSpeeds speeds) {
-    SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
-    robotRelativeSpeeds = kinematics.toChassisSpeeds(swerveModuleStates);
-
-    swerveModules[0].setState(swerveModuleStates[0]); // Front left
-    swerveModules[1].setState(swerveModuleStates[1]); // Front right
-    // swerveModules[2].setState(swerveModuleStates[2]); // Back left
-    swerveModules[3].setState(swerveModuleStates[3]); // Back right
   }
 
   public double getHeading() {
@@ -131,10 +118,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
-    positions[0] = swerveModules[0].getModulePosition();
-    positions[1] = swerveModules[1].getModulePosition();
-    positions[2] = swerveModules[2].getModulePosition();
-    positions[3] = swerveModules[3].getModulePosition();
+
+    for(int i = 0; i < swerveModules.length; i++) {
+      positions[i] = swerveModules[i].getModulePosition();
+    }
+    
     return positions;
   }
 
@@ -142,16 +130,14 @@ public class SwerveSubsystem extends SubsystemBase {
     return swerveDrivePoseEstimator.getEstimatedPosition();
   }
 
-  public void resetRobotPose(Pose2d pose) {
+  private void resetRobotPose(Pose2d pose) {
     swerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(getHeading()), getModulePositions(), pose);
-    // updatePose();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
-
-    publisher.set(swerveDrivePoseEstimator.getEstimatedPosition());
+    publisher.set(getPose());
   }
 }
