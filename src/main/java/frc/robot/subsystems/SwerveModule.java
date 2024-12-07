@@ -37,6 +37,8 @@ public class SwerveModule extends SubsystemBase {
   private int angularOffset;
   private String moduleName;
 
+  private SwerveModuleState moduleState;
+
 
   public SwerveModule(int turnMotorID, int driveMotorID, int angularOffset, String moduleName) {
     turnMotor = new CANSparkMax(turnMotorID, MotorType.kBrushless);
@@ -51,6 +53,7 @@ public class SwerveModule extends SubsystemBase {
     this.angularOffset = angularOffset;
     this.moduleName = moduleName;
 
+    this.moduleState = new SwerveModuleState(0, Rotation2d.fromDegrees(0));
 
     configureMotors();
   }
@@ -63,7 +66,7 @@ public class SwerveModule extends SubsystemBase {
     turnEncoder.setVelocityConversionFactor(DrivebaseModuleConstants.kTurnEncoderVelocityFactor);
 
     turnMotor.setSmartCurrentLimit(35);
-    // turnMotor.setClosedLoopRampRate(8);
+    turnMotor.setClosedLoopRampRate(8);
     turnMotor.setIdleMode(IdleMode.kCoast);
 
     turnMotor.burnFlash();
@@ -83,7 +86,7 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.setClosedLoopRampRate(8);
     driveMotor.setSmartCurrentLimit(35);
     driveMotor.setIdleMode(IdleMode.kBrake);
-// 
+
     driveMotor.burnFlash();
   }
 
@@ -98,18 +101,23 @@ public class SwerveModule extends SubsystemBase {
   public SwerveModulePosition getModulePosition() {
     double position = getDistance();
     Rotation2d angle = Rotation2d.fromDegrees(-getAngle());
-
     return new SwerveModulePosition(position, angle);
   }
 
+  public SwerveModuleState getModuleState() {
+    return moduleState;
+  }
+
   public void setState(SwerveModuleState state) {
-    double[] optimizedModule = SwerveUtil.optimizeModule(getAngle(), state.angle.getDegrees() + 180, state.speedMetersPerSecond);
+    moduleState = state;
+    drive();
+  }
+
+  public void drive() {
+    double[] optimizedModule = SwerveUtil.optimizeModule(getAngle(), moduleState.angle.getDegrees() + 180, moduleState.speedMetersPerSecond);
 
     turnMotor.set(-turnPIDController.calculate(getAngle(), optimizedModule[0]));
-    // drivePIDController.setReference(optimizedModule[1], ControlType.kVelocity);
-    SmartDashboard.putNumber("output drive voltage", optimizedModule[1] * DrivebaseModuleConstants.driveKV);
-    double outputVoltage = optimizedModule[1] * DrivebaseModuleConstants.driveKV * 10;
-    driveMotor.setVoltage(MathUtil.clamp(outputVoltage, -6, 6));
+    driveMotor.setVoltage(MathUtil.clamp(optimizedModule[1] * DrivebaseModuleConstants.driveKV * 10, -6, 6));
   }
 
   @Override

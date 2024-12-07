@@ -29,24 +29,13 @@ public class SwerveSubsystem extends SubsystemBase {
   AHRS gyro;
 
   SwerveModule[] swerveModules;
-  SwerveModule backLeftModule;
-  SwerveModule backRightModule;
-  SwerveModule frontLeftModule;
-  SwerveModule frontRightModule;
 
   Translation2d m_frontLeftLocation = new Translation2d(DrivebaseConstants.kWheelBase / 2, -DrivebaseConstants.kTrackWidth / 2);
   Translation2d m_frontRightLocation = new Translation2d(DrivebaseConstants.kWheelBase / 2, DrivebaseConstants.kTrackWidth / 2);
   Translation2d m_backLeftLocation = new Translation2d(-DrivebaseConstants.kWheelBase / 2, -DrivebaseConstants.kTrackWidth / 2);
   Translation2d m_backRightLocation = new Translation2d(-DrivebaseConstants.kWheelBase / 2, DrivebaseConstants.kTrackWidth / 2); 
 
-  SwerveModuleState backLeftModuleState;
-  SwerveModuleState backRightModuleState;
-  SwerveModuleState frontLeftModuleState;
-  SwerveModuleState frontRightModuleState;
-
   SwerveDrivePoseEstimator swerveDrivePoseEstimator;
-
-  ChassisSpeeds robotRelativeSpeeds;
 
   StructPublisher<Pose2d> publisher;
   StructPublisher<Pose2d> arrayPublisher;
@@ -64,15 +53,12 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
 
 
-    // Pathplanner
-    robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, Rotation2d.fromDegrees(0));
-
     AutoBuilder.configureHolonomic(
       this::getPose, 
       this::resetRobotPose, 
       this::getRobotRelativeSpeeds, 
-      this::drivePPL, 
-      new HolonomicPathFollowerConfig(3.6, 0.57, new ReplanningConfig(true, true)), 
+      this::driveRobotRelative, 
+      new HolonomicPathFollowerConfig(3.6, 0.57, new ReplanningConfig()), 
       () -> {
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
@@ -91,9 +77,8 @@ public class SwerveSubsystem extends SubsystemBase {
     setModuleStates(swerveModuleStates);
   }
 
-  public void drivePPL(ChassisSpeeds speeds) {
+  public void driveRobotRelative(ChassisSpeeds speeds) {
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
-    robotRelativeSpeeds = kinematics.toChassisSpeeds(swerveModuleStates);
 
     setModuleStates(swerveModuleStates);
   }
@@ -104,8 +89,16 @@ public class SwerveSubsystem extends SubsystemBase {
     }
   }
 
+  public SwerveModuleState[] getModuleStates() {
+    SwerveModuleState[] moduleStates = new SwerveModuleState[4];
+    for(int i = 0; i < 4; i++) {
+      moduleStates[i] = swerveModules[i].getModuleState();
+    }
+    return moduleStates;
+  }
+
   public ChassisSpeeds getRobotRelativeSpeeds() {
-    return robotRelativeSpeeds;
+    return kinematics.toChassisSpeeds(getModuleStates());
   }
 
   public double getHeading() {
