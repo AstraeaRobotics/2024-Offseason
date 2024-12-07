@@ -55,7 +55,6 @@ public class SwerveSubsystem extends SubsystemBase {
   public SwerveModuleState frontRightModuleState;
 
   SwerveDrivePoseEstimator swerveDrivePoseEstimator;
-  Pose2d pose;
 
   ChassisSpeeds robotRelativeSpeeds;
 
@@ -73,10 +72,8 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveModules[3] = new SwerveModule(8, 7, 90, "back right"); // Back right
     
     // Pose estimation
-    // AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    // Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0, 0.5), new Rotation3d(0, 0, 0));
     swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
-    pose = new Pose2d();
+    publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
 
     robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(0, 0, 0, Rotation2d.fromDegrees(0));
 
@@ -93,7 +90,7 @@ public class SwerveSubsystem extends SubsystemBase {
         if (alliance.isPresent()) {
           return alliance.get() == DriverStation.Alliance.Red;
         }
-        return false;}, 
+        return true;}, 
       this);
     
     gyro.reset();
@@ -101,14 +98,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void drive(double driveX, double driveY, double rotation) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
-    // robotRelativeSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
-
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
     
 
     swerveModules[0].setState(swerveModuleStates[0]); // Front left
     swerveModules[1].setState(swerveModuleStates[1]); // Front right
-    swerveModules[2].setState(swerveModuleStates[2]); // Back left
+    // swerveModules[2].setState(swerveModuleStates[2]); // Back left
     swerveModules[3].setState(swerveModuleStates[3]); // Back right
   }
 
@@ -122,7 +117,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     swerveModules[0].setState(swerveModuleStates[0]); // Front left
     swerveModules[1].setState(swerveModuleStates[1]); // Front right
-    swerveModules[2].setState(swerveModuleStates[2]); // Back left
+    // swerveModules[2].setState(swerveModuleStates[2]); // Back left
     swerveModules[3].setState(swerveModuleStates[3]); // Back right
   }
 
@@ -144,24 +139,19 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return pose;
-  }
-
-  public void updatePose() {
-    pose = swerveDrivePoseEstimator.getEstimatedPosition();
+    return swerveDrivePoseEstimator.getEstimatedPosition();
   }
 
   public void resetRobotPose(Pose2d pose) {
     swerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(getHeading()), getModulePositions(), pose);
-    updatePose();
+    // updatePose();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
-    updatePose();
 
-    publisher.set(pose);
+    publisher.set(swerveDrivePoseEstimator.getEstimatedPosition());
   }
 }

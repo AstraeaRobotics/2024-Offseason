@@ -63,7 +63,7 @@ public class SwerveModule extends SubsystemBase {
     turnEncoder.setVelocityConversionFactor(DrivebaseModuleConstants.kTurnEncoderVelocityFactor);
 
     turnMotor.setSmartCurrentLimit(35);
-    turnMotor.setClosedLoopRampRate(8);
+    // turnMotor.setClosedLoopRampRate(8);
     turnMotor.setIdleMode(IdleMode.kCoast);
 
     turnMotor.burnFlash();
@@ -83,7 +83,7 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.setClosedLoopRampRate(8);
     driveMotor.setSmartCurrentLimit(35);
     driveMotor.setIdleMode(IdleMode.kBrake);
-
+// 
     driveMotor.burnFlash();
   }
 
@@ -106,13 +106,15 @@ public class SwerveModule extends SubsystemBase {
     double[] optimizedModule = SwerveUtil.optimizeModule(getAngle(), state.angle.getDegrees() + 180, state.speedMetersPerSecond);
 
     turnMotor.set(-turnPIDController.calculate(getAngle(), optimizedModule[0]));
-    drivePIDController.setReference(optimizedModule[1], ControlType.kVelocity);
+    // drivePIDController.setReference(optimizedModule[1], ControlType.kVelocity);
+    SmartDashboard.putNumber("output drive voltage", optimizedModule[1] * DrivebaseModuleConstants.driveKV);
+    double outputVoltage = optimizedModule[1] * DrivebaseModuleConstants.driveKV * 10;
+    driveMotor.setVoltage(MathUtil.clamp(outputVoltage, -6, 6));
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // SmartDashboard.putNumber("output current", driveMotor.getOutputCurrent());
-    // SmartDashboard.putNumber("output voltage", driveMotor.getBusVoltage() * driveMotor.getAppliedOutput());
+    SmartDashboard.putNumber("drivebase position", getDistance());
   }
 }

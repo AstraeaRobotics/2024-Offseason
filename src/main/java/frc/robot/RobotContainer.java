@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants.ShooterStates;
 import frc.robot.commands.auto.paths.OneNoteAuto;
+import frc.robot.commands.auto.paths.PathPlannerTest;
 import frc.robot.commands.intakeCommands.IntakeNote;
 import frc.robot.commands.intakeCommands.ReverseIntake;
 import frc.robot.commands.pivot.ManualRotation;
@@ -46,8 +47,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem m_SwerveSubsystem = new SwerveSubsystem();
-  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+  // private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  // private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
 
   // private final CommandXboxController m_driverController =
   //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -93,21 +94,21 @@ public class RobotContainer {
    */
   private void configureBindings() {
     kCross.onTrue(new ResetGyro(m_SwerveSubsystem));
-    kCircle.onTrue(new PathPlannerAuto("Line"));
+    kCircle.onTrue(new PathPlannerTest(m_SwerveSubsystem));
 
     // kOperator1.whileTrue(new ShooterIntake(m_shooterSubsystem)); // INT
-    kOperator1.whileTrue(new ParallelCommandGroup(new IntakeNote(m_intakeSubsystem, 70, 70), new ShooterIntake(m_shooterSubsystem)));
-    kOperator2.whileTrue(new ShootNote(m_shooterSubsystem)); // SHT
-    kOperator3.whileTrue(new ShootAmp(m_shooterSubsystem)); // AST
-    kOperator4.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kGround)); // GRD
-    kOperator5.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker)); // SPK
-    kOperator6.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kAmp)); // AMP
-    kOperator7.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker2)); // SID
-    kOperator8.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kFeed));
-    kOperator9.whileTrue(new PostIntake(m_shooterSubsystem)); // PI
-    kOperator10.onTrue(new ManualRotation(m_shooterSubsystem, true));
-    kOperator11.onTrue(new ManualRotation(m_shooterSubsystem, false)); // RST
-    kOperator12.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
+    // kOperator1.whileTrue(new ParallelCommandGroup(new IntakeNote(m_intakeSubsystem, 70, 70), new ShooterIntake(m_shooterSubsystem)));
+    // kOperator2.whileTrue(new ShootNote(m_shooterSubsystem)); // SHT
+    // kOperator3.whileTrue(new ShootAmp(m_shooterSubsystem)); // AST
+    // kOperator4.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kGround)); // GRD
+    // kOperator5.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker)); // SPK
+    // kOperator6.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kAmp)); // AMP
+    // kOperator7.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSpeaker2)); // SID
+    // kOperator8.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kFeed));
+    // kOperator9.whileTrue(new PostIntake(m_shooterSubsystem)); // PI
+    // kOperator10.onTrue(new ManualRotation(m_shooterSubsystem, true));
+    // kOperator11.onTrue(new ManualRotation(m_shooterSubsystem, false)); // RST
+    // kOperator12.onTrue(new SetState(m_shooterSubsystem, ShooterStates.kSource));
   }
 
   /**
