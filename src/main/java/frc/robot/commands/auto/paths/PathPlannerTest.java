@@ -8,6 +8,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.swerve.ResetPose;
 import frc.robot.subsystems.SwerveSubsystem;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -18,6 +19,6 @@ public class PathPlannerTest extends SequentialCommandGroup {
   public PathPlannerTest(SwerveSubsystem m_SwerveSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new PathPlannerAuto("Line"));
+    addCommands(new ResetPose(m_SwerveSubsystem), new PathPlannerAuto("Line"));
   }
 }
