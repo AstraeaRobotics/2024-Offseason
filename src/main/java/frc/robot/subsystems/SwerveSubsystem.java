@@ -22,7 +22,6 @@ import frc.robot.Constants.DrivebaseConstants;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -52,7 +51,7 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveModules[2] = new SwerveModule(6, 5, 180, "back left"); // Back left   
     swerveModules[3] = new SwerveModule(8, 7, 90, "back right"); // Back right
     
-    swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(kinematics, Rotation2d.fromDegrees(getHeading() + 180), getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
+    swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
     publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
 
     AutoBuilder.configureHolonomic(
@@ -60,14 +59,13 @@ public class SwerveSubsystem extends SubsystemBase {
       this::resetRobotPose, 
       this::getRobotRelativeSpeeds, 
       this::driveRobotRelative, 
-      // new HolonomicPathFollowerConfig(3.6, 0.57, new ReplanningConfig()), 
-      new HolonomicPathFollowerConfig(new PIDConstants(1.0, 0.0, 0.0), new PIDConstants(1.0, 0.0, 0.0), 3.6, 0.57, new ReplanningConfig()),
+      new HolonomicPathFollowerConfig(3.6, 0.57, new ReplanningConfig()), 
       () -> {
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
           return alliance.get() == DriverStation.Alliance.Red;
         }
-        return true;}, 
+        return false;}, 
       this);
     
     gyro.reset();
@@ -131,7 +129,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void resetRobotPose(Pose2d pose) {
-    swerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d(new Translation2d(), Rotation2d.fromDegrees(180)));
+    swerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d());
   }
 
   @Override
