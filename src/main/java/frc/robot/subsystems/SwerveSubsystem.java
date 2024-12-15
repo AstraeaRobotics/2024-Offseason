@@ -129,7 +129,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void resetRobotPose(Pose2d pose) {
-    swerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d());
+    swerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(getHeading()), getModulePositions(), pose);
   }
 
   @Override

@@ -99,9 +99,9 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public SwerveModulePosition getModulePosition() {
-    double position = getDistance();
+    double distance = getDistance();
     Rotation2d angle = Rotation2d.fromDegrees(-getAngle());
-    return new SwerveModulePosition(position, angle);
+    return new SwerveModulePosition(distance, angle);
   }
 
   public SwerveModuleState getModuleState() {
