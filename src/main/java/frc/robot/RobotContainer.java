@@ -7,9 +7,9 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants.ShooterStates;
 import frc.robot.commands.auto.paths.OneNoteAuto;
-import frc.robot.commands.auto.paths.PathPlannerTest;
-import frc.robot.commands.intake.IntakeNote;
-import frc.robot.commands.intake.ReverseIntake;
+// import frc.robot.commands.auto.paths.PathPlannerTest;
+// import frc.robot.commands.intake.IntakeNote;
+// import frc.robot.commands.intake.ReverseIntake;
 import frc.robot.commands.pivot.ManualRotation;
 import frc.robot.commands.pivot.SetState;
 import frc.robot.commands.shooter.PostIntake;
@@ -17,7 +17,7 @@ import frc.robot.commands.shooter.ShootAmp;
 import frc.robot.commands.shooter.ShootNote;
 import frc.robot.commands.shooter.ShooterIntake;
 import frc.robot.commands.swerve.ResetGyro;
-import frc.robot.commands.swerve.ResetPose;
+// import frc.robot.commands.swerve.ResetPose;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.commands.vision.AlignAndPivot;
 // import frc.robot.commands.vision.AlignToShoot;
@@ -95,8 +95,8 @@ public class RobotContainer {
    */
   private void configureBindings() {
     kCross.onTrue(new ResetGyro(m_SwerveSubsystem));
-    kCircle.onTrue(new PathPlannerTest(m_SwerveSubsystem));
-    kTriangle.onTrue(new ResetPose(m_SwerveSubsystem));
+    // kCircle.onTrue(new PathPlannerTest(m_SwerveSubsystem));
+    // kTriangle.onTrue(new ResetPose(m_SwerveSubsystem));
 
     // kOperator1.whileTrue(new ShooterIntake(m_shooterSubsystem)); // INT
     // kOperator1.whileTrue(new ParallelCommandGroup(new IntakeNote(m_intakeSubsystem, 70, 70), new ShooterIntake(m_shooterSubsystem)));

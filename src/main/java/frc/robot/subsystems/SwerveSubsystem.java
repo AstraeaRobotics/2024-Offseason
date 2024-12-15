@@ -17,7 +17,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
-
+import frc.robot.utils.LimelightUtil;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -132,9 +132,21 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(-getHeading()), getModulePositions(), pose);
   }
 
+  public void updatePose() {
+    double[] m_limelightPose = LimelightUtil.getBotPose();
+
+    if (m_limelightPose != null && m_limelightPose.length >= 3 /*unsurw what num to put here, assume it just X, Y, rot */) {
+      Pose2d m_limelightPose2d = new Pose2d(m_limelightPose[0], m_limelightPose[1], Rotation2d.fromDegrees(m_limelightPose[2]));
+      // i dont know why i have to do the Rotation2d.fromDegrees but it just works
+      
+      swerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(-getHeading()), getModulePositions(), m_limelightPose2d);
+    }
+  }
+
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    updatePose();
+
     swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
     publisher.set(getPose());
   }

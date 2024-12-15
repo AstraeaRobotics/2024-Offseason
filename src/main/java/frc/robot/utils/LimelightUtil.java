@@ -40,4 +40,21 @@ public class LimelightUtil {
         return 24.8 + (-0.483 * area) + (11.6 * area * area);
         // 24.8 + -0.483x + 11.6x^2
     }
+
+    public static double[] getBotPose() {
+        return getTable().getEntry("pose").getDoubleArray(new double[6]);
+    }
+
+    public static double getPoseX() {
+        return getBotPose()[0];
+    }
+
+    public static double getPoseY() {
+        return getBotPose()[1];
+    }
+
+    public static double getPoseZ() {
+        return getBotPose()[2];
+    }
+
 }
