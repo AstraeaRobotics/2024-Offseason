@@ -4,6 +4,8 @@
 
 package frc.robot.commands.vision;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -31,7 +33,8 @@ public class RotationalAlign extends Command {
     // if(LimelightUtil.getTa() != 0) {
     //   driveYOutput = (LimelightUtil.getTa() - 8) * 0.035;
     // }
-    m_SwerveSubsystem.drive(0, 0, driveRotationOutput);
+    m_SwerveSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, driveRotationOutput, Rotation2d.fromDegrees(m_SwerveSubsystem.getHeading())));
+    m_SwerveSubsystem.drive(null);
     double shooterAngle = LimelightUtil.getShooterAngle(LimelightUtil.getTa());
     SmartDashboard.putNumber("shooter angle", shooterAngle);
     SmartDashboard.putNumber("april tag area", LimelightUtil.getTa());
@@ -40,7 +43,7 @@ public class RotationalAlign extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_SwerveSubsystem.drive(0, 0, 0);
+    m_SwerveSubsystem.drive(new ChassisSpeeds(0, 0, 0));
   }
 
   // Returns true when the command should end.

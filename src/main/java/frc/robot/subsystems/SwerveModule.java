@@ -117,7 +117,7 @@ public class SwerveModule extends SubsystemBase {
     double[] optimizedModule = SwerveUtil.optimizeModule(getAngle(), moduleState.angle.getDegrees() + 180, moduleState.speedMetersPerSecond);
 
     turnMotor.set(-turnPIDController.calculate(getAngle(), optimizedModule[0]));
-    driveMotor.setVoltage(MathUtil.clamp(optimizedModule[1] * DrivebaseModuleConstants.driveKV * 10, -6, 6));
+    driveMotor.setVoltage(SwerveUtil.getModuleVoltage(optimizedModule[1]));
   }
 
   @Override

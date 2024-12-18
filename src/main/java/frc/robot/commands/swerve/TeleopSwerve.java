@@ -6,9 +6,12 @@ package frc.robot.commands.swerve;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.utils.SwerveUtil;
 
 public class TeleopSwerve extends Command {
   /** Creates a new TeleopSwerve. */
@@ -38,14 +41,16 @@ public class TeleopSwerve extends Command {
   
   public void execute() {
     if(Math.abs(m_driveX.getAsDouble()) > 0.2 || Math.abs(m_driveY.getAsDouble()) > 0.2) {
-      m_SwerveSubsystem.drive(m_driveX.getAsDouble(), m_driveY.getAsDouble(), m_rotation.getAsDouble());
-      // m_SwerveSubsystem.drive(0, -1 * Math.signum(m_driveY.getAsDouble()), 0);
+      // m_SwerveSubsystem.drive(m_driveX.getAsDouble(), m_driveY.getAsDouble(), m_rotation.getAsDouble());
+      m_SwerveSubsystem.drive(SwerveUtil.driveInputToChassisSpeeds(m_driveX.getAsDouble(), m_driveY.getAsDouble(), m_rotation.getAsDouble(), m_SwerveSubsystem.getHeading()));
     }
     else if(Math.abs(m_rotation.getAsDouble()) > 0.2) {
-      m_SwerveSubsystem.drive(0, 0, m_rotation.getAsDouble());
+      // m_SwerveSubsystem.drive(0, 0, m_rotation.getAsDouble());
+      m_SwerveSubsystem.drive(SwerveUtil.driveInputToChassisSpeeds(0, 0, m_rotation.getAsDouble(), m_SwerveSubsystem.getHeading()));
     }
     else{
-      m_SwerveSubsystem.drive(0, 0, 0);
+      // m_SwerveSubsystem.drive(0, 0, 0);
+      m_SwerveSubsystem.drive(SwerveUtil.driveInputToChassisSpeeds(0, 0, 0, m_SwerveSubsystem.getHeading()));
     }
   }
 

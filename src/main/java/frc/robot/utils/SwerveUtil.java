@@ -1,7 +1,9 @@
 package frc.robot.utils;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.proto.ChassisSpeedsProto;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveUtil {
@@ -20,4 +22,7 @@ public class SwerveUtil {
         return optimizedModule;
     }
 
+    public static ChassisSpeeds driveInputToChassisSpeeds(double driveX, double driveY, double rotation, double heading) {
+        return ChassisSpeeds.fromFieldRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(heading));
+    }
 }

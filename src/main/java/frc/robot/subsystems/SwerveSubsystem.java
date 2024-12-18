@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
 
-
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -46,10 +45,10 @@ public class SwerveSubsystem extends SubsystemBase {
     gyro = new AHRS();
 
     swerveModules = new SwerveModule[4];
-    swerveModules[0] = new SwerveModule(2, 1, 270, "front left"); // Front left
-    swerveModules[1] = new SwerveModule(4, 3, 0, "front right"); // Front right
-    swerveModules[2] = new SwerveModule(6, 5, 180, "back left"); // Back left   
-    swerveModules[3] = new SwerveModule(8, 7, 90, "back right"); // Back right
+    swerveModules[0] = new SwerveModule(2, 1, 270, "front left");
+    swerveModules[1] = new SwerveModule(4, 3, 0, "front right");
+    swerveModules[2] = new SwerveModule(6, 5, 180, "back left");
+    swerveModules[3] = new SwerveModule(8, 7, 90, "back right");
     
     swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(kinematics, Rotation2d.fromDegrees(getHeading()), getModulePositions(), new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0)));
     publisher = NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
@@ -58,7 +57,7 @@ public class SwerveSubsystem extends SubsystemBase {
       this::getPose, 
       this::resetRobotPose, 
       this::getRobotRelativeSpeeds, 
-      this::driveRobotRelative, 
+      this::drive, 
       new HolonomicPathFollowerConfig(3.6, 0.57, new ReplanningConfig()), 
       () -> {
         var alliance = DriverStation.getAlliance();
@@ -71,35 +70,44 @@ public class SwerveSubsystem extends SubsystemBase {
     gyro.reset();
   }
 
-  public void drive(double driveX, double driveY, double rotation) {
-    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
-    SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
+  // public void drive(double driveX, double driveY, double rotation) {
+  //   ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-driveY, driveX, rotation, Rotation2d.fromDegrees(getHeading()));
+  //   SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
     
-    setModuleStates(swerveModuleStates);
-  }
+  //   setModuleStates(swerveModuleStates);
+  // }
 
-  public void driveRobotRelative(ChassisSpeeds speeds) {
+  // public void driveRobotRelative(ChassisSpeeds speeds) {
+  //   SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
+
+  //   setModuleStates(swerveModuleStates);
+  // }
+  public void drive(ChassisSpeeds speeds) {
     SwerveModuleState[] swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
 
-    setModuleStates(swerveModuleStates);
+    for(int i = 0; i < swerveModuleStates.length; i++){
+      swerveModules[i].setState(swerveModuleStates[i]);
+    }
   }
 
-  public void setModuleStates(SwerveModuleState[] moduleStates) {
-    // for(int i = 0; i < moduleStates.length; i++) {
-    //   swerveModules[i].setState(moduleStates[i]);
-    // }
-    swerveModules[0].setState(moduleStates[0]);
-    swerveModules[1].setState(moduleStates[1]);
-    // swerveModules[2].setState(moduleStates[2]);
-    swerveModules[3].setState(moduleStates[3]);
-  }
+  // Informational methods
 
   public SwerveModuleState[] getModuleStates() {
     SwerveModuleState[] moduleStates = new SwerveModuleState[4];
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < swerveModules.length; i++) {
       moduleStates[i] = swerveModules[i].getModuleState();
     }
     return moduleStates;
+  }
+
+    public SwerveModulePosition[] getModulePositions() {
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
+
+    for(int i = 0; i < swerveModules.length; i++) {
+      positions[i] = swerveModules[i].getModulePosition();
+    }
+    
+    return positions;
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
@@ -110,22 +118,14 @@ public class SwerveSubsystem extends SubsystemBase {
     return gyro.getYaw();
   }
 
-  public void resetGyro() {
-    gyro.reset();
-  }
-
-  public SwerveModulePosition[] getModulePositions() {
-    SwerveModulePosition[] positions = new SwerveModulePosition[4];
-
-    for(int i = 0; i < swerveModules.length; i++) {
-      positions[i] = swerveModules[i].getModulePosition();
-    }
-    
-    return positions;
-  }
-
   public Pose2d getPose() {
     return swerveDrivePoseEstimator.getEstimatedPosition();
+  }
+
+  // Utilities
+
+  public void resetGyro() {
+    gyro.reset();
   }
 
   public void resetRobotPose(Pose2d pose) {
