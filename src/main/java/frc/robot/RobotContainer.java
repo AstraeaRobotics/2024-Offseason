@@ -96,7 +96,6 @@ public class RobotContainer {
   private void configureBindings() {
     kCross.onTrue(new ResetGyro(m_SwerveSubsystem));
     kCircle.onTrue(new PathPlannerTest(m_SwerveSubsystem));
-    kTriangle.onTrue(new ResetPose(m_SwerveSubsystem));
 
     // kOperator1.whileTrue(new ShooterIntake(m_shooterSubsystem)); // INT
     // kOperator1.whileTrue(new ParallelCommandGroup(new IntakeNote(m_intakeSubsystem, 70, 70), new ShooterIntake(m_shooterSubsystem)));

@@ -19,6 +19,6 @@ public class PathPlannerTest extends SequentialCommandGroup {
   public PathPlannerTest(SwerveSubsystem m_SwerveSubsystem) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new ResetPose(m_SwerveSubsystem), new PathPlannerAuto("Line"));
+    addCommands(new PathPlannerAuto("Line"));
   }
 }
