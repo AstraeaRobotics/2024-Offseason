@@ -20,7 +20,9 @@ import frc.robot.Constants.DrivebaseConstants;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -58,13 +60,14 @@ public class SwerveSubsystem extends SubsystemBase {
       this::resetRobotPose, 
       this::getRobotRelativeSpeeds, 
       this::drive, 
-      new HolonomicPathFollowerConfig(3.6, 0.57, new ReplanningConfig()), 
+      // new HolonomicPathFollowerConfig(3.6, 0.57, new ReplanningConfig()), 
+      new HolonomicPathFollowerConfig(new PIDConstants(0.001, 0.0, 0.0), new PIDConstants(0.05, 0.0, 0.0), 2.0, 0.57, new ReplanningConfig()),
       () -> {
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
           return alliance.get() == DriverStation.Alliance.Red;
         }
-        return false;}, 
+        return true;}, 
       this);
     
     gyro.reset();
