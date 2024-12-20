@@ -1,10 +1,12 @@
 package frc.robot.utils;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.proto.ChassisSpeedsProto;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.DrivebaseModuleConstants;
 
 public class SwerveUtil {
     public static double[] optimizeModule(double currentAngle, double desiredAngle, double speed) {
@@ -20,6 +22,10 @@ public class SwerveUtil {
         }
 
         return optimizedModule;
+    }
+
+    public static double getModuleVoltage(double speedMPS) {
+        return MathUtil.clamp(speedMPS * DrivebaseModuleConstants.driveKV, -6, 6);
     }
 
     public static ChassisSpeeds driveInputToChassisSpeeds(double driveX, double driveY, double rotation, double heading) {
