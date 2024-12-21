@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.0,
-      "y": 0.0
+      "x": 15.0,
+      "y": 5.5
     },
-    "rotation": 0.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Side Line"
+            "pathName": "back short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "back sort - right short"
           }
         }
       ]
