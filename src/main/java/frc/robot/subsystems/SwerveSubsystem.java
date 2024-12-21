@@ -15,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.utils.LimelightUtil;
@@ -135,18 +136,22 @@ public class SwerveSubsystem extends SubsystemBase {
   public void updatePose() {
     double[] m_limelightPose = LimelightUtil.getBotPose();
 
-    if (m_limelightPose != null && m_limelightPose.length >= 3 /*unsurw what num to put here, assume it just X, Y, rot */) {
-      Pose2d m_limelightPose2d = new Pose2d(m_limelightPose[0], m_limelightPose[1], Rotation2d.fromDegrees(m_limelightPose[2]));
-      // i dont know why i have to do the Rotation2d.fromDegrees but it just works
-      
-      swerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(-getHeading()), getModulePositions(), m_limelightPose2d);
+    if (m_limelightPose != null && m_limelightPose.length >= 3 /* idk what num this shd be still */) {
+      Pose2d m_limelightPose2d = new Pose2d(
+        m_limelightPose[0], // x
+        m_limelightPose[1], // y
+        Rotation2d.fromDegrees(m_limelightPose[2]) // rot
+      );
+
+      swerveDrivePoseEstimator.addVisionMeasurement(m_limelightPose2d, Timer.getFPGATimestamp());
+
+      // copied above from here: https://docs.wpilib.org/en/stable/docs/software/advanced-controls/state-space/state-space-pose-estimators.html
     }
   }
 
   @Override
   public void periodic() {
     updatePose();
-
     swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
     publisher.set(getPose());
   }
