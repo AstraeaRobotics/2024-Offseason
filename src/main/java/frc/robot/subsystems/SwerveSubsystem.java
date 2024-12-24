@@ -25,6 +25,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import frc.robot.utils.LimelightHelpers;
+
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
   SwerveDriveKinematics kinematics;
@@ -133,25 +135,58 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrivePoseEstimator.resetPosition(Rotation2d.fromDegrees(-getHeading()), getModulePositions(), pose);
   }
 
-  public void updatePose() {
+  // public void updatePose() {
+  //   double[] m_limelightPose = LimelightUtil.getBotPose();
+
+  //   if (m_limelightPose != null && m_limelightPose.length >= 3 /* idk what num this shd be still */) {
+  //     Pose2d m_limelightPose2d = new Pose2d(
+  //       m_limelightPose[0], // x
+  //       m_limelightPose[1], // y
+  //       Rotation2d.fromDegrees(m_limelightPose[2]) // rot
+  //     );
+
+  //     swerveDrivePoseEstimator.addVisionMeasurement(m_limelightPose2d, Timer.getFPGATimestamp());
+
+  //     // copied above from here: https://docs.wpilib.org/en/stable/docs/software/advanced-controls/state-space/state-space-pose-estimators.html
+  //   }
+  // }
+
+  public void updatePoseNEW() {
+    LimelightHelpers.SetRobotOrientation("limelight", swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0); // idk what these zeros are
+
+    LimelightHelpers.PoseEstimate apriltag = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    
     double[] m_limelightPose = LimelightUtil.getBotPose();
 
+    Pose2d m_limelightPose2d = null; // only for the conditional at the end
+
     if (m_limelightPose != null && m_limelightPose.length >= 3 /* idk what num this shd be still */) {
-      Pose2d m_limelightPose2d = new Pose2d(
-        m_limelightPose[0], // x
-        m_limelightPose[1], // y
-        Rotation2d.fromDegrees(m_limelightPose[2]) // rot
-      );
-
-      swerveDrivePoseEstimator.addVisionMeasurement(m_limelightPose2d, Timer.getFPGATimestamp());
-
-      // copied above from here: https://docs.wpilib.org/en/stable/docs/software/advanced-controls/state-space/state-space-pose-estimators.html
+        m_limelightPose2d = new Pose2d(
+            m_limelightPose[0], // x
+            m_limelightPose[1], // y
+            Rotation2d.fromDegrees(m_limelightPose[2]) // rot
+        );
     }
-  }
 
+    boolean noUpdate = false;
+
+    if (gyro.getRate() > 720 /*where is this number from? */ || apriltag.tagCount == 0) {
+        noUpdate = true;
+    }
+
+    if (noUpdate == false) {
+        if (m_limelightPose2d != null) {
+            swerveDrivePoseEstimator.addVisionMeasurement(m_limelightPose2d, Timer.getFPGATimestamp()); // both
+        }
+        swerveDrivePoseEstimator.addVisionMeasurement(apriltag.pose, Timer.getFPGATimestamp()); // if no limelight, only apriltag
+    }
+}
+
+  
   @Override
   public void periodic() {
-    updatePose();
+    // updatePose();
+    updatePoseNEW();
     swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
     publisher.set(getPose());
   }
