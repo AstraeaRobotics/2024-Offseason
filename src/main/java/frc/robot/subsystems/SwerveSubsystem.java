@@ -4,6 +4,13 @@
 
 package frc.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,13 +24,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
-
-import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
+import frc.robot.utils.LimelightHelpers;
 
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
@@ -123,6 +124,26 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
+
+    LimelightHelpers.SetRobotOrientation("limelight", swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    Boolean doRejectUpdate = false;
+    if(Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+    {
+      doRejectUpdate = true;
+    }
+    if(mt2.tagCount == 0)
+    {
+      doRejectUpdate = true;
+    }
+    if(!doRejectUpdate)
+    {
+      swerveDrivePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+      swerveDrivePoseEstimator.addVisionMeasurement(
+          mt2.pose,
+          mt2.timestampSeconds);
+    }
+    
     publisher.set(getPose());
   }
 }
