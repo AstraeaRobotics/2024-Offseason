@@ -62,7 +62,7 @@ public class SwerveSubsystem extends SubsystemBase {
       this::getRobotRelativeSpeeds, 
       this::drive, 
       // new HolonomicPathFollowerConfig(3.6, 0.57, new ReplanningConfig()), 
-      new HolonomicPathFollowerConfig(new PIDConstants(0.001, 0.0, 0.0), new PIDConstants(0.05, 0.0, 0.0), 2.0, 0.57, new ReplanningConfig()),
+      new HolonomicPathFollowerConfig(new PIDConstants(0.000001, 0.0, 0.0), new PIDConstants(0.05, 0.0, 0.0), 2.0, 0.57, new ReplanningConfig()),
       () -> {
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
@@ -125,24 +125,24 @@ public class SwerveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(-getHeading()), getModulePositions());
 
-    LimelightHelpers.SetRobotOrientation("limelight", swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-    LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-    Boolean doRejectUpdate = false;
-    if(Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-    {
-      doRejectUpdate = true;
-    }
-    if(mt2.tagCount == 0)
-    {
-      doRejectUpdate = true;
-    }
-    if(!doRejectUpdate)
-    {
-      swerveDrivePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-      swerveDrivePoseEstimator.addVisionMeasurement(
-          mt2.pose,
-          mt2.timestampSeconds);
-    }
+    // LimelightHelpers.SetRobotOrientation("limelight", swerveDrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    // LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    // Boolean doRejectUpdate = false;
+    // if(Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+    // {
+    //   doRejectUpdate = true;
+    // }
+    // if(mt2.tagCount == 0)
+    // {
+    //   doRejectUpdate = true;
+    // }
+    // if(!doRejectUpdate)
+    // {
+    //   swerveDrivePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+    //   swerveDrivePoseEstimator.addVisionMeasurement(
+    //       mt2.pose,
+    //       mt2.timestampSeconds);
+    // }
     
     publisher.set(getPose());
   }
